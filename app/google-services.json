@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "906269956762",
+    "project_id": "essence-c8be2",
+    "storage_bucket": "essence-c8be2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:906269956762:android:0b802e2ea8743aea1a9d23",
+        "android_client_info": {
+          "package_name": "com.example.essence"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "906269956762-tso7161ka8b5t6sf02o10f5b6g1dpbsi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.essence",
+            "certificate_hash": "5c40d051b7ab92c491359c2abbb3192e00e40875"
+          }
+        },
+        {
+          "client_id": "906269956762-3t3ug8ud5sugnptk81etcbck064i5jec.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6FGv_SEtVf9Wt03PmcuM2tJ2v7rJrvXY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "906269956762-3t3ug8ud5sugnptk81etcbck064i5jec.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

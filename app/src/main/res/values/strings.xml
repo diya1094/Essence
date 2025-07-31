@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Essence</string>
+    <string name="no_data">Not Signed In</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="hint_email">Enter your email</string>
+    <string name="hint_password">Enter your password</string>
+    <string name="btn_login">Login</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="signup_text">Don’t have an account? Sign Up</string>
+    <string name="btn_register">Register</string>
+    <string name="btn_register_with_google">Register with Google</string>
+    <string name="login_txt">Already have an account? Login</string>
+    <string name="btn_login_with_google">Login with Google</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="tvChoose">Select Your Role</string>
+    <string name="buyer">Buyer</string>
+    <string name="seller">Seller</string>
+    <string name="client_id">906269956762–3t3ug8ud5sugnptk81etcbck064i5jec.apps.googleusercontent.com</string>
+</resources>
