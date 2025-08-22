@@ -40,24 +40,36 @@ class ChooseRoleActivity : AppCompatActivity() {
     }
 
     private fun saveRoleAndContinue(role: String) {
-        val userId = auth.currentUser?.uid ?: return
-        val updates = mapOf("role" to role)
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(this, "User not found. Please login again.", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
 
+        // Navigate immediately for better UX
+        navigateToRoleScreen(role)
+
+        // Save role in Firestore in background
+        val updates = mapOf("role" to role)
         db.collection("users").document(userId)
             .set(updates, SetOptions.merge())
             .addOnSuccessListener {
                 Toast.makeText(this, "Role saved: $role", Toast.LENGTH_SHORT).show()
-
-                val intent = Intent(
-                    this,
-                    if (role == "buyer") BuyerMainActivity::class.java
-                    else SellerHomeActivity::class.java
-                )
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to save role", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun navigateToRoleScreen(role: String) {
+        val intent = when (role) {
+            "buyer" -> Intent(this, BuyerMainActivity::class.java)
+            "seller" -> Intent(this, SellerHomeActivity::class.java)
+            else -> Intent(this, LoginActivity::class.java) // fallback
+        }
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 }

@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Top Bar -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,72 +55,86 @@
                 android:layout_marginBottom="20dp"
                 style="@style/AutoSizingTextViewStyle"/>
 
-            <!-- Stats Cards -->
+            <!-- Banner -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:src="@drawable/seller_homepage"
+                android:background="@drawable/card_background"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Stats Cards with spacing -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_marginBottom="16dp">
 
                 <!-- Your Listings -->
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="150dp"
-                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/card_background"
-                    android:gravity="center"
-                    android:layout_marginBottom="10dp"
                     android:elevation="4dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
                     android:padding="16dp">
 
                     <TextView
                         android:id="@+id/listings_count"
+                        style="@style/AutoSizingTextViewStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="15"
+                        android:textColor="@color/black"
                         android:textSize="32sp"
-                        android:textStyle="bold"
-                        style="@style/AutoSizingTextViewStyle"
-                        android:textColor="@color/black" />
+                        android:textStyle="bold" />
 
                     <TextView
+                        style="@style/AutoSizingTextViewStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Your Listing"
-                        android:textSize="16sp"
-                        style="@style/AutoSizingTextViewStyle"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
                 </LinearLayout>
 
+                <!-- Sold -->
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="150dp"
-                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/card_background"
-                    android:gravity="center"
                     android:elevation="4dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
                     android:padding="16dp">
 
                     <TextView
                         android:id="@+id/sold_count"
+                        style="@style/AutoSizingTextViewStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="10"
+                        android:textColor="#006400"
                         android:textSize="32sp"
-                        android:textStyle="bold"
-                        style="@style/AutoSizingTextViewStyle"
-                        android:textColor="#006400" />
+                        android:textStyle="bold" />
 
                     <TextView
+                        style="@style/AutoSizingTextViewStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sold"
-                        android:textSize="16sp"
-                        style="@style/AutoSizingTextViewStyle"
-                        android:textColor="#006400" />
+                        android:textColor="#006400"
+                        android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Add New Property Button -->
             <Button
                 android:id="@+id/btnAddNewProperty"
                 android:layout_width="match_parent"
@@ -132,15 +147,17 @@
         </LinearLayout>
     </ScrollView>
 
+    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="63dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/white"
-        app:itemIconTint="@color/primaryColor"
-        app:itemTextColor="@color/primaryColor"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
         app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/seller_bottom_nav_menu"
+        app:itemRippleColor="@color/secondaryColor" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -62,10 +62,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Looking to buy a property"
+                android:text="Find your dream home with ease"
                 android:textSize="14sp"
                 android:textColor="#757575"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginStart="10dp"
                 tools:ignore="HardcodedText" />
 
@@ -78,8 +78,9 @@
                 android:backgroundTint="#8B572A"
                 android:minHeight="50dp"
                 android:minWidth="180dp"
+                android:layout_gravity="right"
                 android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -124,10 +125,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Looking to sell a property"
+                android:text="Showcase and sell your property faster"
                 android:textSize="14sp"
                 android:textColor="#757575"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginStart="10dp"
                 tools:ignore="HardcodedText" />
 
@@ -140,8 +141,9 @@
                 android:backgroundTint="#8B572A"
                 android:minHeight="50dp"
                 android:minWidth="180dp"
+                android:layout_gravity="right"
                 android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

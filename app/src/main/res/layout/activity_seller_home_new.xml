@@ -175,11 +175,13 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="63dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/white"
-        app:itemIconTint="@color/primaryColor"
-        app:itemTextColor="@color/primaryColor"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
         app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/seller_bottom_nav_menu"
+        app:itemRippleColor="@color/secondaryColor" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

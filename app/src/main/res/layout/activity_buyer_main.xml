@@ -64,15 +64,17 @@
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="414dp"
-        android:layout_height="63dp"
-        android:background="@color/white"
-        app:itemIconTint="@color/primaryColor"
-        app:itemTextColor="@color/primaryColor"
-        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/buyer_bottom_nav_menu"
+        app:itemRippleColor="@color/secondaryColor"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
