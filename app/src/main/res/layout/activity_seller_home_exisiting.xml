@@ -34,14 +34,14 @@
                     android:layout_centerInParent="true"
                     style="@style/AutoSizingTextViewStyle"/>
 
-                <ImageView
-                    android:id="@+id/notification_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_bell"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="16dp"
-                    android:contentDescription="Notification" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/notification_icon"-->
+<!--                    android:layout_width="24dp"-->
+<!--                    android:layout_height="24dp"-->
+<!--                    android:src="@drawable/ic_bell"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:contentDescription="Notification" />-->
             </RelativeLayout>
 
             <!-- Welcome Text -->

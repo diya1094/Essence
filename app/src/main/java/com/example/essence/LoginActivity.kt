@@ -18,18 +18,18 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        mAuth = FirebaseAuth.getInstance()
 
-        if (isLoggedIn) {
+        // Check if already logged in → skip login screen
+        val currentUser = mAuth.currentUser
+        if (currentUser != null) {
             goToChooseRoleActivity()
             return
         }
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = "Login"
-
-        mAuth = FirebaseAuth.getInstance()
 
         binding.btnLogin.setOnClickListener {
             loginUser()
@@ -52,12 +52,6 @@ class LoginActivity : AppCompatActivity() {
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-                    with(sharedPref.edit()) {
-                        putBoolean("isLoggedIn", true)
-                        apply()
-                    }
-
                     Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
                     goToChooseRoleActivity()
                 } else {

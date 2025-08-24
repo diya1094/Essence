@@ -30,6 +30,43 @@ class ChooseRoleActivity : AppCompatActivity() {
             return
         }
 
+        // 🔹 Step 1: First check SharedPreferences
+        val sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        val savedRole = sharedPref.getString("userRole", null)
+
+        if (savedRole != null) {
+            // Role already saved locally → skip Firestore and go directly
+            navigateToRoleScreen(savedRole)
+            finish()
+            return
+        }
+
+        // 🔹 Step 2: If not found locally, check Firestore
+        db.collection("users").document(user.uid).get()
+            .addOnSuccessListener { document ->
+                if (document.exists() && document.contains("role")) {
+                    val firestoreRole = document.getString("role")
+                    if (firestoreRole != null) {
+                        // Save in SharedPreferences for next time
+                        val editor = sharedPref.edit()
+                        editor.putString("userRole", firestoreRole)
+                        editor.apply()
+
+                        navigateToRoleScreen(firestoreRole)
+                        finish()
+                        return@addOnSuccessListener
+                    }
+                }
+                // If no role in Firestore → show buttons
+                setupRoleButtons()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error checking role", Toast.LENGTH_SHORT).show()
+                setupRoleButtons()
+            }
+    }
+
+    private fun setupRoleButtons() {
         binding.btnBuyer.setOnClickListener {
             saveRoleAndContinue("buyer")
         }
@@ -48,10 +85,16 @@ class ChooseRoleActivity : AppCompatActivity() {
             return
         }
 
-        // Navigate immediately for better UX
+        // 🔹 Save role in SharedPreferences
+        val sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putString("userRole", role)
+        editor.apply()
+
+        // 🔹 Navigate immediately
         navigateToRoleScreen(role)
 
-        // Save role in Firestore in background
+        // 🔹 Save role in Firestore
         val updates = mapOf("role" to role)
         db.collection("users").document(userId)
             .set(updates, SetOptions.merge())

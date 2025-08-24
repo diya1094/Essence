@@ -1,0 +1,185 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:text="Property Details"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:textColor="@color/black"
+    android:textSize="20sp"
+    android:textStyle="bold"/>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Upload Photos Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Photos"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Upload Photos Box -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:gravity="center"
+                android:background="@drawable/rounded_box"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload Photos"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="High-quality images are recommended"
+                    android:textSize="12sp"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
+
+            <!-- Type of Property -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Type of Property"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+            <Spinner
+                android:id="@+id/typeOfPropertyInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter year"
+                android:inputType="number"
+                android:spinnerMode="dropdown"
+                android:padding="10dp"/>
+            <!-- Listing Price -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Listing Price"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+            <EditText
+                android:id="@+id/listingPriceInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter price"
+                android:inputType="numberDecimal|numberSigned"
+                android:digits="0123456789.,"
+                android:padding="10dp"
+                android:layout_marginStart="2dp"
+                tools:ignore="HardcodedText" />
+
+            <!-- Property Size -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Property Size"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/propertySizeInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter size (sq ft or sq m)"
+                android:inputType="numberDecimal|numberSigned"
+                android:digits="0123456789.,"
+                android:padding="10dp"
+                tools:ignore="HardcodedText" />
+
+            <!-- Property Description -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Property Description"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/propertyDescriptionInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter description"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:padding="10dp"
+                tools:ignore="HardcodedText" />
+
+            <!-- Address -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Address"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+            <EditText
+                android:id="@+id/addressInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter property address"
+                android:inputType="textPostalAddress"
+                android:padding="10dp"/>
+
+            <!-- Year Built -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Age of Property (in years)"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+            <Spinner
+                android:id="@+id/yearBuiltInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter year"
+                android:inputType="number"
+                android:spinnerMode="dropdown"
+                android:padding="10dp"/>
+
+            <!-- Save and Continue Button -->
+            <Button
+                android:id="@+id/saveAndContinueBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save and Continue"
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
+                android:backgroundTint="#99582A"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="20dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
