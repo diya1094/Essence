@@ -12,13 +12,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-
     private val RC_SIGN_IN = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +28,7 @@ class RegisterActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        // Google Sign-In setup
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -35,14 +36,16 @@ class RegisterActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        // Google register button
         binding.googleRegisterButton.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
+        // Email/Password register button
         binding.btnRegister.setOnClickListener {
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 auth.createUserWithEmailAndPassword(email, password)
@@ -59,12 +62,14 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this, "Email and Password required", Toast.LENGTH_SHORT).show()
             }
         }
+
+        // Already have account -> back to login
         binding.tvSignUp.setOnClickListener {
             finish()
         }
-
     }
 
+    // Google Sign-In result
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -79,14 +84,41 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Authenticate with Google and save user data in Firestore
     private fun firebaseAuthWithGoogle(idToken: String?) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Signed in with Google", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, ChooseRoleActivity::class.java))
-                    finish()
+                    val user = auth.currentUser
+                    user?.let {
+                        val userId = it.uid
+                        val name = it.displayName ?: ""
+                        val email = it.email ?: ""
+                        val photoUrl = it.photoUrl?.toString() ?: ""
+
+                        // User data
+                        val userData = hashMapOf(
+                            "uid" to userId,
+                            "name" to name,
+                            "email" to email,
+                            "photoUrl" to photoUrl,
+                            "createdAt" to System.currentTimeMillis()
+                        )
+
+                        // Store in Firestore
+                        val db = FirebaseFirestore.getInstance()
+                        db.collection("users").document(userId)
+                            .set(userData)
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Signed in with Google & saved!", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, ChooseRoleActivity::class.java))
+                                finish()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this, "Error saving user: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }
                 } else {
                     Toast.makeText(this, "Firebase Auth failed", Toast.LENGTH_SHORT).show()
                 }

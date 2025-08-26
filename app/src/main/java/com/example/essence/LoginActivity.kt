@@ -15,12 +15,16 @@ class LoginActivity : AppCompatActivity() {
     private var storedVerificationId: String? = null
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
 
+    // Hardcoded Admin Credentials
+    private val ADMIN_EMAIL = "admin@example.com"
+    private val ADMIN_PASSWORD = "admin123"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mAuth = FirebaseAuth.getInstance()
 
-        // Check if already logged in → skip login screen
+        // If user already logged in → skip login screen
         val currentUser = mAuth.currentUser
         if (currentUser != null) {
             goToChooseRoleActivity()
@@ -49,6 +53,16 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        if (email == ADMIN_EMAIL && password == ADMIN_PASSWORD) {
+            Toast.makeText(this, "Welcome Admin", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, AdminActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            return
+        }
+
+        // Otherwise → Firebase login for normal users
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {

@@ -107,12 +107,48 @@ class ChooseRoleActivity : AppCompatActivity() {
     }
 
     private fun navigateToRoleScreen(role: String) {
-        val intent = when (role) {
-            "buyer" -> Intent(this, BuyerMainActivity::class.java)
-            "seller" -> Intent(this, SellerHomeActivity::class.java)
-            else -> Intent(this, LoginActivity::class.java) // fallback
+        val userId = auth.currentUser?.uid ?: return
+
+        when (role) {
+            "buyer" -> {
+                val intent = Intent(this, BuyerMainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }
+
+            "seller" -> {
+                // 🔹 Check if seller has uploaded any property
+                db.collection("properties")
+                    .whereEqualTo("userId", userId)
+                    .limit(1) // only need to know if at least one exists
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val intent = if (querySnapshot.isEmpty) {
+                            // No property uploaded → New Seller screen
+                            Intent(this, SellerHomeActivity2::class.java)
+                        } else {
+                            // At least one property → Existing Seller screen
+                            Intent(this, SellerHomeActivity::class.java)
+                        }
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Error checking properties", Toast.LENGTH_SHORT).show()
+                        // fallback → send to new seller
+                        val intent = Intent(this, SellerHomeActivity2::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                    }
+            }
+
+            else -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }
         }
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
     }
 }

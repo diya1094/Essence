@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -15,8 +17,18 @@
         android:theme="@style/Theme.Essence"
         tools:targetApi="31">
         <activity
-            android:name=".UploadPropertyActivity"
+            android:name=".ProfileActivity"
             android:exported="false" />
+        <activity
+            android:name=".PropertyAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UploadPropertyActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".SellerHomeActivity2"
             android:exported="false" />

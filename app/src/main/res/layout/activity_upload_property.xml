@@ -38,12 +38,15 @@
 
             <!-- Upload Photos Box -->
             <LinearLayout
+                android:id="@+id/uploadPhotoLayout"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:gravity="center"
                 android:background="@drawable/rounded_box"
                 android:orientation="vertical"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -60,60 +63,6 @@
                     android:textSize="12sp"
                     android:textColor="@color/black"/>
             </LinearLayout>
-
-            <!-- Type of Property -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Type of Property"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"/>
-            <Spinner
-                android:id="@+id/typeOfPropertyInput"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/rounded_box"
-                android:hint="Enter year"
-                android:inputType="number"
-                android:spinnerMode="dropdown"
-                android:padding="10dp"/>
-            <!-- Listing Price -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Listing Price"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"/>
-            <EditText
-                android:id="@+id/listingPriceInput"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/rounded_box"
-                android:hint="Enter price"
-                android:inputType="numberDecimal|numberSigned"
-                android:digits="0123456789.,"
-                android:padding="10dp"
-                android:layout_marginStart="2dp"
-                tools:ignore="HardcodedText" />
-
-            <!-- Property Size -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Property Size"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                tools:ignore="HardcodedText" />
-            <EditText
-                android:id="@+id/propertySizeInput"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/rounded_box"
-                android:hint="Enter size (sq ft or sq m)"
-                android:inputType="numberDecimal|numberSigned"
-                android:digits="0123456789.,"
-                android:padding="10dp"
-                tools:ignore="HardcodedText" />
 
             <!-- Property Description -->
             <TextView
@@ -149,6 +98,63 @@
                 android:hint="Enter property address"
                 android:inputType="textPostalAddress"
                 android:padding="10dp"/>
+
+
+            <!-- Type of Property -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Type of Property"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+            <Spinner
+                android:id="@+id/typeOfPropertyInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter year"
+                android:inputType="number"
+                android:spinnerMode="dropdown"
+                android:padding="10dp"/>
+
+            <!-- Listing Price -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Listing Price"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+            <EditText
+                android:id="@+id/listingPriceInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter price"
+                android:inputType="numberDecimal|numberSigned"
+                android:digits="0123456789.,"
+                android:padding="10dp"
+                android:layout_marginStart="2dp"
+                tools:ignore="HardcodedText" />
+
+            <!-- Property Size -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Property Size(in sq ft)"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                tools:ignore="HardcodedText" />
+            <EditText
+                android:id="@+id/propertySizeInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter size"
+                android:inputType="numberDecimal|numberSigned"
+                android:digits="0123456789.,"
+                android:padding="10dp"
+                tools:ignore="HardcodedText" />
+
 
             <!-- Year Built -->
             <TextView

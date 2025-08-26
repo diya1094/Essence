@@ -46,7 +46,7 @@
                 android:layout_height="150dp"
                 android:scaleType="centerCrop"
                 android:contentDescription="Buyer Image"
-                android:src="@drawable/buyer_1"
+                android:src="@drawable/buyer1"
                 tools:ignore="HardcodedText" />
 
             <TextView

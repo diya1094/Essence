@@ -44,16 +44,35 @@
 <!--                    android:contentDescription="Notification" />-->
             </RelativeLayout>
 
-            <!-- Welcome Text -->
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Welcome, {Name} 👋"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="20dp"
-                style="@style/AutoSizingTextViewStyle"/>
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:layout_marginStart="0dp"
+                android:gravity="center_vertical">
+
+                <!-- Welcome Message -->
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Welcome 👋"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
+
+                <!-- Role Badge -->
+                <TextView
+                    android:id="@+id/tvRole"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Seller"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/holo_red_dark" />
+            </LinearLayout>
 
             <!-- Banner -->
             <ImageView
@@ -88,7 +107,7 @@
                         style="@style/AutoSizingTextViewStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="15"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="32sp"
                         android:textStyle="bold" />
@@ -119,7 +138,7 @@
                         style="@style/AutoSizingTextViewStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="10"
+                        android:text=""
                         android:textColor="#006400"
                         android:textSize="32sp"
                         android:textStyle="bold" />
