@@ -51,9 +51,29 @@ class RegisterActivity : AppCompatActivity() {
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(this, "Registered successfully", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this, ChooseRoleActivity::class.java))
-                            finish()
+                            val user = auth.currentUser
+                            user?.let {
+                                val userId = it.uid
+                                val userData = hashMapOf(
+                                    "uid" to userId,
+                                    "name" to (it.displayName ?: ""),
+                                    "email" to it.email,
+                                    "photoUrl" to (it.photoUrl?.toString() ?: ""),
+                                    "createdAt" to System.currentTimeMillis()
+                                )
+
+                                val db = FirebaseFirestore.getInstance()
+                                db.collection("users").document(userId).get()
+                                    .addOnSuccessListener { document ->
+                                        if (!document.exists()) {
+                                            db.collection("users").document(userId).set(userData)
+                                        }
+                                    }
+
+                                Toast.makeText(this, "Registered successfully", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, ChooseRoleActivity::class.java))
+                                finish()
+                            }
                         } else {
                             Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
@@ -97,26 +117,40 @@ class RegisterActivity : AppCompatActivity() {
                         val email = it.email ?: ""
                         val photoUrl = it.photoUrl?.toString() ?: ""
 
-                        // User data
-                        val userData = hashMapOf(
-                            "uid" to userId,
-                            "name" to name,
-                            "email" to email,
-                            "photoUrl" to photoUrl,
-                            "createdAt" to System.currentTimeMillis()
-                        )
-
-                        // Store in Firestore
                         val db = FirebaseFirestore.getInstance()
-                        db.collection("users").document(userId)
-                            .set(userData)
-                            .addOnSuccessListener {
-                                Toast.makeText(this, "Signed in with Google & saved!", Toast.LENGTH_SHORT).show()
-                                startActivity(Intent(this, ChooseRoleActivity::class.java))
-                                finish()
+
+                        // ✅ Check if user already exists
+                        db.collection("users").document(userId).get()
+                            .addOnSuccessListener { document ->
+                                if (document.exists()) {
+                                    // User already exists → don’t overwrite
+                                    Toast.makeText(this, "Welcome back $name!", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(this, ChooseRoleActivity::class.java))
+                                    finish()
+                                } else {
+                                    // New user → create record
+                                    val userData = hashMapOf(
+                                        "uid" to userId,
+                                        "name" to name,
+                                        "email" to email,
+                                        "photoUrl" to photoUrl,
+                                        "createdAt" to System.currentTimeMillis()
+                                    )
+
+                                    db.collection("users").document(userId)
+                                        .set(userData)
+                                        .addOnSuccessListener {
+                                            Toast.makeText(this, "Signed in with Google & saved!", Toast.LENGTH_SHORT).show()
+                                            startActivity(Intent(this, ChooseRoleActivity::class.java))
+                                            finish()
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Toast.makeText(this, "Error saving user: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
                             }
                             .addOnFailureListener { e ->
-                                Toast.makeText(this, "Error saving user: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Error checking user: ${e.message}", Toast.LENGTH_SHORT).show()
                             }
                     }
                 } else {

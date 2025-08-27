@@ -1,14 +1,15 @@
 package com.example.essence
 
-// Data class representing a property
 data class Property(
     var propertyId: String = "",
-    var title: String = "",
     var description: String = "",
     var price: String = "",
-    var location: String = "",
-    var sellerId: String = "",
+    var address: String = "",
+    var yearBuilt: String = "",
+    var propertyType: String = "",
+    var status: String = "pending",
+    var userId: String = "",
+
     var sellerName: String = "",
-    var imageUrl: String = "",
-    var status: String = "pending"   // default until admin approves
+    var sellerEmail: String = ""
 )

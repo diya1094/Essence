@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -12,6 +14,7 @@ class SellerHomeActivity2 : AppCompatActivity() {
 
     private lateinit var tvWelcomeMessage: TextView
     private lateinit var btnAddNewProperty: Button
+    private lateinit var bottomNavigationView: BottomNavigationView
 
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
@@ -23,7 +26,8 @@ class SellerHomeActivity2 : AppCompatActivity() {
         tvWelcomeMessage = findViewById(R.id.tvWelcome)
         btnAddNewProperty = findViewById(R.id.btnAddNewProperty)
 
-        // Fetch user name from Firestore
+        bottomNavigationView = findViewById(R.id.bottomNavigation)
+
         val currentUser = auth.currentUser
         if (currentUser != null) {
             db.collection("users").document(currentUser.uid)
@@ -43,6 +47,38 @@ class SellerHomeActivity2 : AppCompatActivity() {
         btnAddNewProperty.setOnClickListener {
             val intent = Intent(this, UploadPropertyActivity::class.java)
             startActivity(intent)
+        }
+
+        bottomNavigationView.selectedItemId = R.id.nav_home
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    true
+                }
+                R.id.nav_search -> {
+
+                    Toast.makeText(this, "Search clicked (Not Implemented)", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_list -> {
+                    Toast.makeText(this, "Listing clicked (Not Implemented)", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_profile -> {
+                    val profileIntent = Intent(this, ProfileActivity::class.java)
+                    startActivity(profileIntent)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::bottomNavigationView.isInitialized) {
+            bottomNavigationView.selectedItemId = R.id.nav_home
         }
     }
 }

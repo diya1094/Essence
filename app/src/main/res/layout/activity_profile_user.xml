@@ -26,6 +26,7 @@
                 android:textSize="22sp"
                 android:gravity="center"
                 android:padding="16dp"
+                android:layout_marginTop="20dp"
                 android:textStyle="bold" />
 
             <!-- Profile Image -->
@@ -34,7 +35,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_person"
+                android:src="@drawable/ic_image"
                 android:layout_marginBottom="16dp"/>
 
             <!-- Profile Fields -->
@@ -79,20 +80,24 @@
                     android:background="@drawable/profile_border">
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Email ID"
                         android:textColor="@color/primaryColor"
                         android:textStyle="bold"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:layout_marginEnd="8dp"/>
 
                     <TextView
                         android:id="@+id/tvEmail"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="xyz123@gmail.com"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:gravity="end"/>
                 </LinearLayout>
 
                 <!-- User ID -->
@@ -105,21 +110,26 @@
                     android:background="@drawable/profile_border">
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="User ID"
                         android:textColor="@color/primaryColor"
                         android:textStyle="bold"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:layout_marginEnd="8dp"/>
 
                     <TextView
                         android:id="@+id/tvUserId"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="user123"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:ellipsize="middle"
+                        android:singleLine="true"
+                        android:gravity="end"/>
                 </LinearLayout>
+
 
                 <!-- Role -->
                 <LinearLayout
@@ -146,6 +156,18 @@
                         android:text="Buyer"
                         android:textSize="16sp"/>
                 </LinearLayout>
+
+                <!-- Logout Button -->
+                <Button
+                    android:id="@+id/btnLogout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Logout"
+                    android:layout_margin="16dp"
+                    android:gravity="center"
+                    android:layout_gravity="bottom"
+                    android:backgroundTint="@color/primaryColor"
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -160,6 +182,5 @@
         app:itemIconTint="@color/nav_item_color"
         app:itemRippleColor="@color/secondaryColor"
         app:itemTextColor="@color/nav_item_color"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/seller_bottom_nav_menu" />
+        app:labelVisibilityMode="labeled" />
 </RelativeLayout>

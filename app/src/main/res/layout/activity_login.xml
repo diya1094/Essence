@@ -1,10 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:padding="24dp"
+    tools:context=".LoginActivity">
 
     <LinearLayout
         android:id="@+id/loginFormContainer"
@@ -16,6 +18,34 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Header Section: Logo + Heading -->
+        <LinearLayout
+            android:id="@+id/headerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="20dp">
+
+            <ImageView
+                android:id="@+id/appLogo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@mipmap/ic_launcher_round"
+                android:contentDescription="App Logo"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/tvHeading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login"
+                android:textStyle="bold"
+                android:textSize="24sp"
+                android:textColor="@android:color/black"
+                android:fontFamily="sans-serif-medium"/>
+        </LinearLayout>
 
         <!-- Email login layout -->
         <LinearLayout
@@ -32,7 +62,9 @@
                 android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:minHeight="48dp"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/edittext_bg"
+                android:padding="12dp"/>
 
             <EditText
                 android:id="@+id/etPassword"
@@ -41,34 +73,63 @@
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:minHeight="48dp"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/edittext_bg"
+                android:padding="12dp"/>
+
         </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvForgotPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/forgot_password"
-        android:layout_gravity="start"
-        android:textColor="#007AFF"
-        android:layout_marginBottom="20dp"/>
+        <TextView
+            android:id="@+id/tvForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/forgot_password"
+            android:layout_gravity="start"
+            android:textColor="#007AFF"
+            android:layout_marginBottom="10dp"/>
 
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_login"
-        android:backgroundTint="#8B572A"
-        android:textColor="#fff"
-        android:layout_marginBottom="20dp"/>
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_login"
+            android:backgroundTint="#8B572A"
+            android:textColor="#fff"
+            android:layout_marginBottom="5dp"/>
 
-    <TextView
-        android:id="@+id/tvSignUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/signup_text"
-        android:textColor="#888888"
-        android:layout_gravity="center"/>
+        <!-- Google Login Button -->
+        <LinearLayout
+            android:id="@+id/googleLoginButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Google logo"
+                android:src="@drawable/ic_google_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login with Google"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/signup_text"
+            android:textColor="#888888"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center"/>
 
     </LinearLayout>
 
