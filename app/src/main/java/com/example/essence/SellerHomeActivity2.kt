@@ -62,7 +62,8 @@ class SellerHomeActivity2 : AppCompatActivity() {
                     true
                 }
                 R.id.nav_list -> {
-                    Toast.makeText(this, "Listing clicked (Not Implemented)", Toast.LENGTH_SHORT).show()
+                    val profileIntent = Intent(this, SellerListingActivity::class.java)
+                    startActivity(profileIntent)
                     true
                 }
                 R.id.nav_profile -> {

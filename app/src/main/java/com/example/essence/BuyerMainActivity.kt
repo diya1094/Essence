@@ -1,50 +1,46 @@
 package com.example.essence
 
-import android.content.Intent
-import android.os.Bundle
 // import android.widget.Toast // If you want to use Toasts for unimplemented items
+import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView // Import
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 
 class BuyerMainActivity : AppCompatActivity() {
 
-    private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: BuyerPropertyAdapter
+    private val propertyList = mutableListOf<Property>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buyer_main)
 
-        bottomNavigationView = findViewById(R.id.bottomNavigation)
+        recyclerView = findViewById(R.id.rvProperties)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = BuyerPropertyAdapter(propertyList)
+        recyclerView.adapter = adapter
 
-        bottomNavigationView.selectedItemId = R.id.nav_home
-
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    true
-                }
-                R.id.nav_search -> {
-                    true
-                }
-                R.id.nav_saved-> {
-                    true
-                }
-                R.id.nav_profile -> {
-                    val profileIntent = Intent(this, ProfileActivity::class.java)
-                    startActivity(profileIntent)
-                    true
-                }
-                else -> false
-            }
-        }
+        fetchApprovedProperties()
     }
 
-    override fun onResume() {
-        super.onResume()
-        // Ensure the correct item is selected when returning to this activity
-        if (::bottomNavigationView.isInitialized) {
-            bottomNavigationView.selectedItemId = R.id.nav_home // Or your default selected item
-        }
+    private fun fetchApprovedProperties() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("properties")
+            .whereEqualTo("status", "approved")
+            .get()
+            .addOnSuccessListener { documents ->
+                propertyList.clear()
+                for (doc in documents) {
+                    val property = doc.toObject(Property::class.java)
+                    propertyList.add(property)
+                }
+                adapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 }
-

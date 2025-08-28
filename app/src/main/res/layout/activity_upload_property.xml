@@ -28,6 +28,22 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Address -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Address"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+            <EditText
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:hint="Enter Property Title"
+                android:inputType="text"
+                android:padding="10dp"/>
+
             <!-- Upload Photos Title -->
             <TextView
                 android:layout_width="wrap_content"

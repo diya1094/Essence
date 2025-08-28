@@ -79,14 +79,14 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvForgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/forgot_password"
-            android:layout_gravity="start"
-            android:textColor="#007AFF"
-            android:layout_marginBottom="10dp"/>
+<!--        <TextView-->
+<!--            android:id="@+id/tvForgotPassword"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/forgot_password"-->
+<!--            android:layout_gravity="start"-->
+<!--            android:textColor="#007AFF"-->
+<!--            android:layout_marginBottom="10dp"/>-->
 
         <Button
             android:id="@+id/btnLogin"

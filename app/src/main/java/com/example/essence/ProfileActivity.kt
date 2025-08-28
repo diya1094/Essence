@@ -29,7 +29,6 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var btnLogout: Button
     private lateinit var bottomNavigationView: BottomNavigationView
 
-    // TODO: IMPORTANT - Define the correct field name used in your "properties" collection to store the seller's User ID.
     private val SELLER_ID_FIELD_IN_PROPERTIES = "userId" // <<< --- CHANGE THIS TO YOUR ACTUAL FIELD NAME (e.g., "sellerId", "ownerId")
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -102,7 +102,7 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/green"
+            android:backgroundTint="#469754"
             android:text="Approve"
             android:textColor="@android:color/white"
             android:layout_marginEnd="4dp"/>
@@ -112,7 +112,7 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/red"
+            android:backgroundTint="#B14141"
             android:text="Reject"
             android:textColor="@android:color/white"/>
     </LinearLayout>
@@ -122,7 +122,7 @@
         android:id="@+id/btnRequestChange"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:backgroundTint="@color/orange"
+        android:backgroundTint="#D7933E"
         android:text="Change"
         android:textColor="@android:color/white"/>
 </LinearLayout>

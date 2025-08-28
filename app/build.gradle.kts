@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -77,4 +78,5 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.google.android.gms:play-services-wallet:19.4.0")
 }
