@@ -25,11 +25,11 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var tvName: TextView
     private lateinit var tvEmail: TextView
     private lateinit var tvRole: TextView
-    private lateinit var tvUserId: TextView // Assuming you have this TextView in your XML
+    private lateinit var tvUserId: TextView
     private lateinit var btnLogout: Button
     private lateinit var bottomNavigationView: BottomNavigationView
 
-    private val SELLER_ID_FIELD_IN_PROPERTIES = "userId" // <<< --- CHANGE THIS TO YOUR ACTUAL FIELD NAME (e.g., "sellerId", "ownerId")
+    private val SELLER_ID_FIELD_IN_PROPERTIES = "userId" //
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
