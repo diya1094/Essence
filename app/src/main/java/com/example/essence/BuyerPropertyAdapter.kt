@@ -1,42 +1,36 @@
 package com.example.essence
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class BuyerPropertyAdapter(
-    private val propertyList: List<Property>
+    private val propertyList: List<Property>,
+    private val onItemClick: (Property) -> Unit
 ) : RecyclerView.Adapter<BuyerPropertyAdapter.PropertyViewHolder>() {
 
-    class PropertyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val propertyImage: ImageView = itemView.findViewById(R.id.propertyImage)
-        val propertyTitle: TextView = itemView.findViewById(R.id.propertyTitle)
-        val propertyPrice: TextView = itemView.findViewById(R.id.propertyPrice)
+    inner class PropertyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val title: TextView = itemView.findViewById(R.id.txtTitle)
+        val price: TextView = itemView.findViewById(R.id.txtPrice)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.activity_seller_listing_item_adapter, parent, false)
-        return PropertyViewHolder(itemView)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.activity_buyer_property_adapter, parent, false)
+        return PropertyViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: PropertyViewHolder, position: Int) {
-        val currentProperty = propertyList[position]
-
-        holder.propertyTitle.text = currentProperty.title
-        holder.propertyPrice.text = "₹${currentProperty.price}"
+        val property = propertyList[position]
+        holder.title.text = property.title
+        holder.price.text = "₹${property.price}"
 
         holder.itemView.setOnClickListener {
-            val context = holder.itemView.context
-            val intent = Intent(context, PropertyDetailActivity::class.java)
-            intent.putExtra("property", currentProperty)
-            context.startActivity(intent)
+            onItemClick(property)
         }
     }
 
-    override fun getItemCount() = propertyList.size
+    override fun getItemCount(): Int = propertyList.size
 }

@@ -1,11 +1,12 @@
 package com.example.essence
 
-// import android.widget.Toast // If you want to use Toasts for unimplemented items
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 
 class BuyerMainActivity : AppCompatActivity() {
@@ -20,8 +21,35 @@ class BuyerMainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.rvProperties)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = BuyerPropertyAdapter(propertyList)
+
+        // ✅ pass click listener into adapter
+        adapter = BuyerPropertyAdapter(propertyList) { property ->
+            val intent = Intent(this, PropertyDetailActivity::class.java)
+            intent.putExtra("property", property) // because Property is Parcelable
+            startActivity(intent)
+        }
         recyclerView.adapter = adapter
+
+        // ✅ Bottom Navigation setup
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    // Already in Home
+                    true
+                }
+                R.id.nav_saved -> {
+                    Toast.makeText(this, "Saved clicked", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_profile -> {
+                    val profileIntent = Intent(this, ProfileActivity::class.java)
+                    startActivity(profileIntent)
+                    true
+                }
+                else -> false
+            }
+        }
 
         fetchApprovedProperties()
     }

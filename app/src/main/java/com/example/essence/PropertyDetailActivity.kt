@@ -12,7 +12,13 @@ class PropertyDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_property_detail)
 
-        val property = intent.getSerializableExtra("property") as Property
+        val property = intent.getParcelableExtra<Property>("property")
+
+        if (property == null) {
+            Toast.makeText(this, "Property data not found!", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         val tvTitle: TextView = findViewById(R.id.tvTitle)
         val tvAddress: TextView = findViewById(R.id.tvAddress)

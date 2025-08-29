@@ -202,7 +202,7 @@ class ProfileActivity : AppCompatActivity() {
                                 intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                 startActivity(intent)
                             }
-                    } else { // Buyer or other roles
+                    } else {
                         Log.i(TAG, "BottomNav Home clicked for buyer/other. Navigating to BuyerMainActivity.")
                         val intent = Intent(this, BuyerMainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -210,16 +210,16 @@ class ProfileActivity : AppCompatActivity() {
                     }
                     true
                 }
+                R.id.nav_list -> {
+                    val intent = Intent(this, SellerListingActivity::class.java)
+                    startActivity(intent)
+                    Log.d(TAG, "List tab clicked. Already here.")
+                    true
+                }
                 R.id.nav_profile -> {
                     Log.d(TAG, "Profile tab clicked. Already here.")
-                    true // Already on the profile screen
+                    true
                 }
-                // Add other navigation cases for your menu items (e.g., search, listings) here
-                // Example:
-                // R.id.nav_search -> {
-                //     startActivity(Intent(this, SearchActivity::class.java))
-                //     true
-                // }
                 else -> false
             }
         }
