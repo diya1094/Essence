@@ -22,15 +22,13 @@ class BuyerMainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.rvProperties)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // ✅ pass click listener into adapter
         adapter = BuyerPropertyAdapter(propertyList) { property ->
             val intent = Intent(this, PropertyDetailActivity::class.java)
-            intent.putExtra("property", property) // because Property is Parcelable
+            intent.putExtra("property", property)
             startActivity(intent)
         }
         recyclerView.adapter = adapter
 
-        // ✅ Bottom Navigation setup
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -39,7 +37,8 @@ class BuyerMainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_saved -> {
-                    Toast.makeText(this, "Saved clicked", Toast.LENGTH_SHORT).show()
+                    val profileIntent = Intent(this, SavedActivity::class.java)
+                    startActivity(profileIntent)
                     true
                 }
                 R.id.nav_profile -> {

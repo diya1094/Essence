@@ -6,4 +6,8 @@
         <item name="android:autoSizeMaxTextSize">24sp</item>
         <item name="android:autoSizeStepGranularity">2sp</item>
     </style>
+    <style name="CustomAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:background">@drawable/dialog_bg</item>
+    </style>
+
 </resources>

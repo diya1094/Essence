@@ -26,17 +26,17 @@
                 android:textSize="22sp"
                 android:gravity="center"
                 android:padding="16dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="25dp"
                 android:textStyle="bold" />
 
             <!-- Profile Image -->
-            <ImageView
-                android:id="@+id/ivProfileImage"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_image"
-                android:layout_marginBottom="16dp"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/ivProfileImage"-->
+<!--                android:layout_width="100dp"-->
+<!--                android:layout_height="100dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:src="@drawable/ic_image"-->
+<!--                android:layout_marginBottom="16dp"/>-->
 
             <!-- Profile Fields -->
             <LinearLayout

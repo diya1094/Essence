@@ -17,13 +17,19 @@
         android:theme="@style/Theme.Essence"
         tools:targetApi="31">
         <activity
+            android:name=".PaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SavedActivity"
+            android:exported="false" />
+        <activity
             android:name=".PropertyDetailActivity"
             android:exported="false" />
         <activity
             android:name=".BuyerPropertyAdapter"
             android:exported="false" />
         <activity
-            android:name=".SellerListingItemAdapterActivity"
+            android:name=".SellerListingItemAdapter"
             android:exported="false" />
         <activity
             android:name=".SellerListingActivity"

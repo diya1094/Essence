@@ -15,5 +15,11 @@ data class Property(
     var status: String = "pending",
     var userId: String = "",
     var sellerName: String = "",
-    var sellerEmail: String = ""
+    var sellerEmail: String = "",
+
+    var adminMessage: String? = null,
+
+    var showApproveButton: Boolean = true,
+    var showRejectButton: Boolean = true,
+    var showRequestChangeButton: Boolean = true
 ) : Parcelable

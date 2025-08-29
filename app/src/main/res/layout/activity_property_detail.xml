@@ -12,6 +12,7 @@
         android:gravity="center"
         android:padding="16dp"
         android:id="@+id/heading" />
+
     <!-- Scrollable content -->
     <ScrollView
         android:layout_width="match_parent"
@@ -32,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_image" />
+                android:src="@drawable/ic_property_image" />
 
             <!-- Title -->
             <TextView
@@ -82,12 +83,20 @@
 
                     <TextView
                         android:id="@+id/tvAddress"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="123 Elm Street, Anytown"
+                        android:layout_weight="2"
+                        android:text="123 Elm Street, Anytown, With a Really Long Address That Should Wrap Properly"
                         android:textSize="16sp"
-                        android:gravity="end" />
+                        android:ellipsize="none"
+                        android:scrollHorizontally="false"
+                        android:singleLine="false"
+                        android:inputType="textMultiLine"
+                        android:gravity="end"
+                        android:lineSpacingExtra="2dp" />
+
                 </LinearLayout>
+
 
                 <!-- Price -->
                 <LinearLayout

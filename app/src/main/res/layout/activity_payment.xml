@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pay to List Your Property"
+            android:layout_marginTop="25dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp" />
+
+
+        <!-- Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name on Card"
+            app:boxStrokeColor="@color/primaryColor"
+            app:boxStrokeWidth="2dp"
+            app:hintTextColor="@color/primaryColor"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Card Number -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Card Number"
+            app:boxStrokeColor="@color/primaryColor"
+            app:hintTextColor="@color/primaryColor"
+            app:boxStrokeWidth="2dp"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCardNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Expiry + CVV -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:boxStrokeColor="@color/primaryColor"
+                app:boxStrokeWidth="2dp"
+                app:hintTextColor="@color/primaryColor"
+                android:hint="Expiry (MM/YY)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etExpiry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:boxStrokeColor="@color/primaryColor"
+                app:boxStrokeWidth="2dp"
+                android:layout_weight="1"
+                app:hintTextColor="@color/primaryColor"
+                android:layout_marginStart="8dp"
+                android:hint="CVV">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCvv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberPassword"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Zip -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxStrokeColor="@color/primaryColor"
+            app:boxStrokeWidth="2dp"
+            android:hint="ZIP/Postal Code"
+            app:hintTextColor="@color/primaryColor"
+            android:layout_marginBottom="20dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etZip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Pay Button -->
+        <Button
+            android:id="@+id/btnPay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pay $499.00"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/primaryColor"/>
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel Payment "
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/primaryColor"/>
+
+    </LinearLayout>
+</ScrollView>

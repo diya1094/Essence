@@ -1,14 +1,17 @@
 package com.example.essence
 
-import android.content.Intent // Import Intent
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-// import android.widget.TextView // Only if you still have dashboard cards in this activity
+import android.view.LayoutInflater
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView // Import
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 
@@ -21,13 +24,11 @@ class AdminActivity : AppCompatActivity() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_property)
 
-        bottomNavigationView = findViewById(R.id.bottomNavigation) // Use the ID from your XML
-
+        bottomNavigationView = findViewById(R.id.bottomNavigation)
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -35,8 +36,8 @@ class AdminActivity : AppCompatActivity() {
         adapter = PropertyAdapter(
             propertyList,
             onApprove = { property -> updatePropertyStatus(property, "approved") },
-            onReject = { property -> updatePropertyStatus(property, "rejected") },
-            onRequestChange = { property -> updatePropertyStatus(property, "changes_requested") }
+            onReject = { property, _ -> showMessageDialog(property, "rejected") },
+            onRequestChange = { property, _ -> showMessageDialog(property, "changes_requested") }
         )
         recyclerView.adapter = adapter
 
@@ -47,9 +48,7 @@ class AdminActivity : AppCompatActivity() {
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_properties-> {
-                    true
-                }
+                R.id.nav_properties -> true
                 R.id.nav_stats -> {
                     val intent = Intent(this, AdminStatsActivity::class.java)
                     startActivity(intent)
@@ -61,7 +60,6 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun loadPropertiesForList() {
-        // ... your existing code ...
         db.collection("properties")
             .get()
             .addOnSuccessListener { documents ->
@@ -75,12 +73,6 @@ class AdminActivity : AppCompatActivity() {
                 val fetchedProperties = mutableListOf<Property>()
                 val itemsToProcess = documents.size()
                 var itemsProcessedCount = 0
-
-                if (itemsToProcess == 0) {
-                    propertyList.clear()
-                    adapter.notifyDataSetChanged()
-                    return@addOnSuccessListener
-                }
 
                 for (doc in documents) {
                     val property = doc.toObject<Property>()
@@ -131,23 +123,59 @@ class AdminActivity : AppCompatActivity() {
             }
     }
 
-    private fun updatePropertyStatus(property: Property, newStatus: String) {
+    // ✅ Updated: Accepts Property + status
+    private fun showMessageDialog(property: Property, status: String) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_request_changes, null)
+
+        val etReason = dialogView.findViewById<TextInputEditText>(R.id.etReason)
+        val btnCancel = dialogView.findViewById<AppCompatButton>(R.id.btnCancel)
+        val btnSubmit = dialogView.findViewById<AppCompatButton>(R.id.btnSubmit)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnSubmit.setOnClickListener {
+            val reason = etReason.text.toString().trim()
+            if (reason.isEmpty()) {
+                Toast.makeText(this, "Please enter a reason", Toast.LENGTH_SHORT).show()
+            } else {
+                updatePropertyStatus(property, status, reason)
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun updatePropertyStatus(property: Property, newStatus: String, message: String? = null) {
         if (property.propertyId.isBlank()) {
             Toast.makeText(this, "Error: Property ID is missing. Cannot update.", Toast.LENGTH_SHORT).show()
             return
         }
 
+        val updates = mutableMapOf<String, Any>("status" to newStatus)
+        message?.let { updates["adminMessage"] = it }
+
         db.collection("properties").document(property.propertyId)
-            .update("status", newStatus)
+            .update(updates)
             .addOnSuccessListener {
                 val displayName = property.description.takeIf { it.isNotBlank() }?.let {
                     if (it.length > 30) it.take(30) + "..." else it
                 } ?: "Property ID ${property.propertyId}"
-                Toast.makeText(this, "'$displayName' status updated to $newStatus.", Toast.LENGTH_SHORT).show()
+
+                Toast.makeText(this, "'$displayName' updated to $newStatus.", Toast.LENGTH_SHORT).show()
 
                 val index = propertyList.indexOfFirst { it.propertyId == property.propertyId }
                 if (index != -1) {
                     propertyList[index].status = newStatus
+                    message?.let { propertyList[index].adminMessage = it }
                     adapter.notifyItemChanged(index)
                 }
             }
@@ -155,14 +183,13 @@ class AdminActivity : AppCompatActivity() {
                 val displayName = property.description.takeIf { it.isNotBlank() }?.let {
                     if (it.length > 30) it.take(30) + "..." else it
                 } ?: "Property ID ${property.propertyId}"
-                Toast.makeText(this, "Error updating status for '$displayName': ${e.message}", Toast.LENGTH_LONG).show()
+
+                Toast.makeText(this, "Error updating '$displayName': ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
-
 
     override fun onResume() {
         super.onResume()
         bottomNavigationView.selectedItemId = R.id.nav_properties
     }
 }
-

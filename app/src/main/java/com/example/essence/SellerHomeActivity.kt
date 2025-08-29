@@ -75,9 +75,8 @@ class SellerHomeActivity : AppCompatActivity() {
                         for (doc in querySnapshot) {
                             val status = doc.getString("status") ?: "pending"
                             when (status.lowercase()) {
-                                "active" -> activeCount++
-                                "pending" -> activeCount++
-                                "sold" -> soldCountValue++
+                                "approved" -> activeCount++   // ✅ only approved counts as active
+                                "sold" -> soldCountValue++   // 📦 sold count separately
                             }
                         }
                         listingsCount.text = activeCount.toString()
@@ -108,7 +107,6 @@ class SellerHomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_search -> {
-
                     Toast.makeText(this, "Search clicked (Not Implemented)", Toast.LENGTH_SHORT).show()
                     true
                 }
@@ -134,4 +132,3 @@ class SellerHomeActivity : AppCompatActivity() {
         }
     }
 }
-
