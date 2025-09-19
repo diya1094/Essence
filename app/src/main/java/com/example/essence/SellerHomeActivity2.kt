@@ -23,6 +23,7 @@ class SellerHomeActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_seller_home_new)
 
+        NotificationHelper.createNotificationChannel(this)
         tvWelcomeMessage = findViewById(R.id.tvWelcome)
         btnAddNewProperty = findViewById(R.id.btnAddNewProperty)
 

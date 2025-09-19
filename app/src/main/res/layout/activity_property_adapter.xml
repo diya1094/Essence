@@ -72,6 +72,19 @@
         android:text="Property Status"
         android:textSize="13sp"
         android:paddingBottom="2dp" />
+    <TextView
+        android:id="@+id/tvDetailsOwnersCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total Owners: "/>
+
+    <!-- Container for joint owners -->
+    <LinearLayout
+        android:id="@+id/layoutJointOwners"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"/>
 
     <!-- Status message -->
     <TextView

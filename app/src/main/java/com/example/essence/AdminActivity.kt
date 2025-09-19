@@ -123,7 +123,6 @@ class AdminActivity : AppCompatActivity() {
             }
     }
 
-    // ✅ Updated: Accepts Property + status
     private fun showMessageDialog(property: Property, status: String) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_request_changes, null)
 
@@ -178,6 +177,27 @@ class AdminActivity : AppCompatActivity() {
                     message?.let { propertyList[index].adminMessage = it }
                     adapter.notifyItemChanged(index)
                 }
+
+                val recipients = property.jointOwners.mapNotNull { it.email }.toMutableList()
+                property.sellerEmail?.let { email ->
+                    if (email.isNotBlank() && email != "N/A") {
+                        recipients.add(email)
+                    }
+                }
+
+                val msg = hashMapOf(
+                    "propertyId" to property.propertyId,
+                    "message" to (message ?: "Status updated to $newStatus"),
+                    "recipients" to recipients
+                )
+
+                db.collection("adminMessages").add(msg)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Message sent to seller & owners!", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to send message: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
             }
             .addOnFailureListener { e ->
                 val displayName = property.description.takeIf { it.isNotBlank() }?.let {

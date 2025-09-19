@@ -189,6 +189,31 @@
                 android:inputType="number"
                 android:spinnerMode="dropdown"
                 android:padding="10dp"/>
+            <!-- Number of Joint Owners -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total No. of Joint Owners"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+
+            <Spinner
+                android:id="@+id/jointOwnerCountSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_box"
+                android:spinnerMode="dropdown"
+                android:padding="10dp" />
+
+            <!-- Container for dynamically added fields -->
+            <LinearLayout
+                android:id="@+id/jointOwnerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:padding="10dp"/>
+
 
             <!-- Save and Continue Button -->
             <Button

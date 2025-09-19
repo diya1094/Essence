@@ -2,7 +2,7 @@ package com.example.essence
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log // Make sure Log is imported
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -24,11 +24,18 @@ class LoginActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
 
     private val ADMIN_EMAIL = "admin@example.com"
-    private val ADMIN_PASSWORD = "admin123"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
+
+        val currentUser = mAuth.currentUser
+        if (currentUser != null) {
+            Log.d(TAG, "User already logged in. Redirecting...")
+            checkUserRoleAndRedirect()
+            return
+        }
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -50,11 +57,6 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.etPassword.text.toString().trim()
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (email == ADMIN_EMAIL && password == ADMIN_PASSWORD) {
-            Toast.makeText(this, "Welcome Admin", Toast.LENGTH_SHORT).show()
-            goToAdminActivity()
             return
         }
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
@@ -135,6 +137,14 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "Authentication error. Please log in again.", Toast.LENGTH_SHORT).show()
             return
         }
+
+        // Admin email check - DIRECT REDIRECT
+        if (currentUser.email == ADMIN_EMAIL) {
+            Log.d(TAG, "Admin email detected, redirecting to AdminActivity.")
+            goToAdminActivity()
+            return
+        }
+
         val userId = currentUser.uid
         Log.d(TAG, "checkUserRoleAndRedirect: User ID: $userId")
 
@@ -194,7 +204,6 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Error fetching user data. Please try again.", Toast.LENGTH_SHORT).show()
             }
     }
-
 
     private fun goToAdminActivity() {
         val intent = Intent(this, AdminActivity::class.java)

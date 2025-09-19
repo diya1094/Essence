@@ -4,10 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +30,9 @@ class UploadPropertyActivity : AppCompatActivity() {
     private lateinit var yearBuiltInput: Spinner
     private lateinit var typeOfPropertyInput: Spinner
     private lateinit var saveContinueBtn: Button
+    private lateinit var jointOwnerCountSpinner: Spinner
+    private lateinit var jointOwnerContainer: LinearLayout
+    private val jointOwnerInputs = mutableListOf<Triple<EditText, EditText, EditText>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +48,80 @@ class UploadPropertyActivity : AppCompatActivity() {
         yearBuiltInput = findViewById(R.id.yearBuiltInput)
         typeOfPropertyInput = findViewById(R.id.typeOfPropertyInput)
         saveContinueBtn = findViewById(R.id.saveAndContinueBtn)
+
+        jointOwnerCountSpinner = findViewById(R.id.jointOwnerCountSpinner)
+        jointOwnerContainer = findViewById(R.id.jointOwnerContainer)
+
+        val ownerCounts = (0..5).map { it.toString() }
+        val ownerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, ownerCounts)
+        ownerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        jointOwnerCountSpinner.adapter = ownerAdapter
+
+        jointOwnerCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val count = ownerCounts[position].toInt()
+                jointOwnerContainer.removeAllViews()
+                jointOwnerInputs.clear()
+
+                for (i in 1..count) {
+                    val ownerLayout = LinearLayout(this@UploadPropertyActivity)
+                    ownerLayout.orientation = LinearLayout.VERTICAL
+                    ownerLayout.setPadding(0, 16, 0, 16)
+
+                    // Label + Input for Name
+                    val nameLabel = TextView(this@UploadPropertyActivity).apply {
+                        text = "Joint Owner $i Name"
+                        setTextAppearance(android.R.style.TextAppearance_Medium)
+                        setPadding(0, 8, 0, 8)
+                    }
+                    val nameInput = EditText(this@UploadPropertyActivity).apply {
+                        hint = "Enter name"
+                        setBackgroundResource(R.drawable.rounded_box)
+                        setPadding(20, 20, 20, 20)
+                    }
+
+                    // Label + Input for Email
+                    val emailLabel = TextView(this@UploadPropertyActivity).apply {
+                        text = "Joint Owner $i Email"
+                        setTextAppearance(android.R.style.TextAppearance_Medium)
+                        setPadding(0, 8, 0, 8)
+                    }
+                    val emailInput = EditText(this@UploadPropertyActivity).apply {
+                        hint = "Enter email"
+                        inputType = android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                        setBackgroundResource(R.drawable.rounded_box)
+                        setPadding(20, 20, 20, 20)
+                    }
+
+                    // Label + Input for Relation
+                    val relationLabel = TextView(this@UploadPropertyActivity).apply {
+                        text = "Phone Number"
+                        setTextAppearance(android.R.style.TextAppearance_Medium)
+                        setPadding(0, 8, 0, 8)
+                    }
+                    val relationInput = EditText(this@UploadPropertyActivity).apply {
+                        hint = "Enter Phone Number"
+                        inputType = android.text.InputType.TYPE_CLASS_NUMBER
+                        filters = arrayOf(android.text.InputFilter.LengthFilter(10))
+                        setBackgroundResource(R.drawable.rounded_box)
+                        setPadding(20, 20, 20, 20)
+                    }
+
+                    // Add views in order
+                    ownerLayout.addView(nameLabel)
+                    ownerLayout.addView(nameInput)
+                    ownerLayout.addView(emailLabel)
+                    ownerLayout.addView(emailInput)
+                    ownerLayout.addView(relationLabel)
+                    ownerLayout.addView(relationInput)
+
+                    jointOwnerContainer.addView(ownerLayout)
+                    jointOwnerInputs.add(Triple(nameInput, emailInput, relationInput))
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
 
         val yearOptions = listOf("less than a year", "1", "2", "3", "4", "5", "5+", "10+", "15+", "20+")
         val yearAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, yearOptions)
@@ -62,6 +143,7 @@ class UploadPropertyActivity : AppCompatActivity() {
             paymentLauncher.launch(intent)
         }
     }
+
     private val paymentLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -105,6 +187,14 @@ class UploadPropertyActivity : AppCompatActivity() {
         val yearBuilt = yearBuiltInput.selectedItem?.toString() ?: ""
         val propertyType = typeOfPropertyInput.selectedItem?.toString() ?: ""
 
+        val jointOwners = jointOwnerInputs.map {
+            mapOf(
+                "name" to it.first.text.toString().trim(),
+                "email" to it.second.text.toString().trim(),
+                "relation" to it.third.text.toString().trim()
+            )
+        }
+
         val propertyRef = db.collection("properties").document()
         val propertyDocumentId = propertyRef.id
 
@@ -118,7 +208,8 @@ class UploadPropertyActivity : AppCompatActivity() {
             "propertyType" to propertyType,
             "status" to "pending",
             "userId" to currentUserId,
-            "createdAt" to System.currentTimeMillis()
+            "createdAt" to System.currentTimeMillis(),
+            "jointOwners" to jointOwners
         )
 
         Log.d("FirestoreSave", "Attempting to save property data: $propertyData")

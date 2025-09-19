@@ -79,4 +79,12 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
     implementation("com.google.android.gms:play-services-wallet:19.4.0")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.0.2")
+    implementation("io.github.jan-tennert.supabase:storage-kt:2.0.2")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.0.2")
+    implementation("io.ktor:ktor-client-okhttp:2.3.7")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.7.0")
+    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.core:core-splashscreen:1.0.0")
 }

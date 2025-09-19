@@ -2,6 +2,7 @@ package com.example.essence
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,12 @@ class PropertyAdapter(
     override fun onBindViewHolder(holder: PropertyViewHolder, position: Int) {
         val property = properties[position]
         holder.bind(property)
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, AdminPropertyDetailActivity::class.java)
+            intent.putExtra("property", property)
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     override fun getItemCount() = properties.size
@@ -41,6 +48,8 @@ class PropertyAdapter(
         private val tvYearBuilt: TextView = itemView.findViewById(R.id.tvYearBuilt)
         private val tvPropertyType: TextView = itemView.findViewById(R.id.tvPropertyType)
         private val tvPropertyStatus: TextView = itemView.findViewById(R.id.tvPropertyStatus)
+        private val tvDetailsOwnersCount: TextView = itemView.findViewById(R.id.tvDetailsOwnersCount)
+        private val layoutJointOwners: LinearLayout = itemView.findViewById(R.id.layoutJointOwners)
 
         private val tvFinalStatusMessage: TextView = itemView.findViewById(R.id.tvFinalAdminStatusMessage)
         private val layoutActionButtons: LinearLayout = itemView.findViewById(R.id.layoutAdminActionButtons)
@@ -57,6 +66,7 @@ class PropertyAdapter(
             tvAddress.text = "Address: ${property.address.ifEmpty { "N/A" }}"
             tvYearBuilt.text = "Year Built: ${property.yearBuilt.ifEmpty { "N/A" }}"
             tvPropertyType.text = "Type: ${property.propertyType.ifEmpty { "N/A" }}"
+            tvDetailsOwnersCount.text = "Total Owners: ${property.jointOwners.size}"
             tvPropertyStatus.text = "Status: ${property.status.capitalize()}"
 
             when (property.status.lowercase()) {
@@ -112,7 +122,7 @@ class PropertyAdapter(
 
             btnSubmit.setOnClickListener {
                 val reason = input.text.toString().ifEmpty { "No reason provided" }
-                onSubmit(reason)   // send reason back
+                onSubmit(reason)
                 dialog.dismiss()
             }
 
@@ -122,7 +132,5 @@ class PropertyAdapter(
 
             dialog.show()
         }
-
-
     }
 }

@@ -1,5 +1,6 @@
 package com.example.essence
 
+import NotificationHelper
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView // Import
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -25,6 +26,7 @@ class SellerHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_seller_home_exisiting)
 
+        NotificationHelper.createNotificationChannel(this)
         tvWelcome = findViewById(R.id.tvWelcome)
         tvRole = findViewById(R.id.tvRole)
         btnAddNewProperty = findViewById(R.id.btnAddNewProperty)

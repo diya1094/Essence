@@ -1,5 +1,6 @@
 package com.example.essence
 
+import NotificationHelper
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -19,6 +20,7 @@ class BuyerMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buyer_main)
 
+        NotificationHelper.createNotificationChannel(this)
         recyclerView = findViewById(R.id.rvProperties)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
