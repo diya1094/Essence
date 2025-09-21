@@ -4,7 +4,10 @@ import PropertySingleton
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
@@ -40,38 +43,71 @@ class AdditionalDocsActivity : AppCompatActivity() {
         submitBtn.setOnClickListener { storeUrisAndProceed() }
         submitBtn.isEnabled = false
 
-        // Set up title for each included doc card and their pickers
+        // Setup pickers & UI for each doc
         for (i in docTypes.indices) {
             val docType = docTypes[i]
             val docTitle = docTitles[i]
             val cardId = resources.getIdentifier("${docType}Card", "id", packageName)
             val card = findViewById<LinearLayout>(cardId)
-            val titleView = card.findViewById<TextView>(R.id.docTitle)
-            titleView.text = docTitle
-
-            // Picker launcher for each docType (avoid loop issues)
+            setupDocCard(card, docType, docTitle)
             val pickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
                 if (uri != null) {
                     selectedDocUris[docType] = uri
-                    updateDocCards()
+                    setupDocCard(card, docType, docTitle) // Refresh
                     tryEnableSubmit()
                 }
             }
             pickerLaunchers[docType] = pickerLauncher
-            card.setOnClickListener { pickerLauncher.launch("*/*") }
         }
     }
 
-    private fun updateDocCards() {
-        for ((i, docType) in docTypes.withIndex()) {
-            val cardId = resources.getIdentifier("${docType}Card", "id", packageName)
-            val card = findViewById<LinearLayout>(cardId)
-            val selected = selectedDocUris[docType] != null
-            // Change background tint for selected state
-            val bgRes = if (selected) R.drawable.rounded_box_selected else R.drawable.rounded_box
-            card.setBackgroundResource(bgRes)
-            // Optionally set docRequired text or color for selection too if desired
+    private fun setupDocCard(card: LinearLayout, docType: String, docTitle: String) {
+        card.removeAllViews()
+        card.orientation = LinearLayout.HORIZONTAL
+
+        val icon = ImageView(card.context)
+        icon.setImageResource(R.drawable.ic_file)
+        icon.layoutParams = LinearLayout.LayoutParams(70, 70)
+        icon.setPadding(6, 0, 16, 0)
+        card.addView(icon)
+
+        val existing = selectedDocUris[docType]
+        if (existing != null) {
+            val fileNameView = TextView(card.context)
+            fileNameView.text = getFileName(existing)
+            fileNameView.textSize = 15f
+
+            val removeBtn = ImageButton(card.context)
+            removeBtn.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+            removeBtn.setBackgroundColor(0x00000000)
+            removeBtn.setOnClickListener {
+                selectedDocUris[docType] = null
+                setupDocCard(card, docType, docTitle)
+                tryEnableSubmit()
+            }
+
+            card.addView(fileNameView)
+            card.addView(removeBtn)
+            // Disable card click, only "X" works for removal
+            card.setOnClickListener(null)
+        } else {
+            val docLabel = TextView(card.context)
+            docLabel.text = docTitle
+            docLabel.textSize = 15f
+            card.addView(docLabel)
+            card.setOnClickListener { pickerLaunchers[docType]?.launch("application/pdf") }
         }
+    }
+
+    private fun getFileName(uri: Uri): String {
+        var name = "selected.pdf"
+        val cur = contentResolver.query(uri, null, null, null, null)
+        if (cur != null && cur.moveToFirst()) {
+            val idx = cur.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            name = if (idx >= 0) cur.getString(idx) else name
+            cur.close()
+        }
+        return name
     }
 
     private fun tryEnableSubmit() {
@@ -79,7 +115,6 @@ class AdditionalDocsActivity : AppCompatActivity() {
     }
 
     private fun storeUrisAndProceed() {
-        // Put URIs for upload on payment screen
         PropertySingleton.titleDeedUri = selectedDocUris["titleDeed"]
         PropertySingleton.nonDisputeUri = selectedDocUris["nonDispute"]
         PropertySingleton.encumbranceUri = selectedDocUris["encumbrance"]
@@ -88,7 +123,6 @@ class AdditionalDocsActivity : AppCompatActivity() {
         PropertySingleton.possessionUri = selectedDocUris["possession"]
         PropertySingleton.nocUri = selectedDocUris["noc"]
         PropertySingleton.utilityBillUri = selectedDocUris["utilityBill"]
-        // Go to PaymentActivity (do upload/save after payment!)
         val intent = Intent(this, PaymentActivity::class.java)
         startActivity(intent)
     }

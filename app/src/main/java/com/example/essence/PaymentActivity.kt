@@ -19,7 +19,6 @@ class PaymentActivity : AppCompatActivity() {
 
         updateAmountText()
 
-        // ✅ Handle Pay Button
         binding.btnPay.setOnClickListener {
             val name = binding.etName.text.toString().trim()
             val card = binding.etCardNumber.text.toString().trim()
@@ -32,7 +31,6 @@ class PaymentActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Payment of $$amount successful", Toast.LENGTH_LONG).show()
 
-                // ✅ Explicit result intent
                 val resultIntent = Intent()
                 resultIntent.putExtra("payment_status", "success")
                 setResult(Activity.RESULT_OK, resultIntent)
@@ -40,7 +38,6 @@ class PaymentActivity : AppCompatActivity() {
             }
         }
 
-        // ✅ Handle Cancel Button
         binding.btnCancel.setOnClickListener {
             Toast.makeText(this, "Transaction cancelled", Toast.LENGTH_LONG).show()
 
