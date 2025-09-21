@@ -16,6 +16,8 @@ class BuyerMainActivity : AppCompatActivity() {
     private lateinit var adapter: BuyerPropertyAdapter
     private val propertyList = mutableListOf<Property>()
 
+//    private lateinit var notificationIcon: ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buyer_main)
@@ -30,6 +32,31 @@ class BuyerMainActivity : AppCompatActivity() {
             startActivity(intent)
         }
         recyclerView.adapter = adapter
+
+//        notificationIcon = findViewById(R.id.notification_icon)
+//        notificationIcon.setOnClickListener {
+//            val db = FirebaseFirestore.getInstance()
+//            db.collection("admin_messages")
+//                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+//                .limit(1)
+//                .get()
+//                .addOnSuccessListener { documents ->
+//                    if (!documents.isEmpty) {
+//                        val latestMessage =
+//                            documents.documents[0].getString("message") ?: "No message"
+//                        NotificationHelper.showNotification(
+//                            this,
+//                            "Admin Message",
+//                            latestMessage
+//                        )
+//                    } else {
+//                        Toast.makeText(this, "No admin messages found", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//                .addOnFailureListener {
+//                    Toast.makeText(this, "Failed to fetch admin message", Toast.LENGTH_SHORT).show()
+//                }
+//        }
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNav.setOnItemSelectedListener { item ->

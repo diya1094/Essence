@@ -54,15 +54,21 @@ class RegisterActivity : AppCompatActivity() {
                             val user = auth.currentUser
                             user?.let {
                                 val userId = it.uid
+                                val db = FirebaseFirestore.getInstance()
+
+                                // ✅ Generate compact username
+                                val baseName = email.substringBefore("@").lowercase()
+                                val shortUserName = baseName.take(8) + (100..999).random()
+
                                 val userData = hashMapOf(
                                     "uid" to userId,
                                     "name" to (it.displayName ?: ""),
                                     "email" to it.email,
                                     "photoUrl" to (it.photoUrl?.toString() ?: ""),
+                                    "username" to shortUserName,  // ✅ Added username
                                     "createdAt" to System.currentTimeMillis()
                                 )
 
-                                val db = FirebaseFirestore.getInstance()
                                 db.collection("users").document(userId).get()
                                     .addOnSuccessListener { document ->
                                         if (!document.exists()) {
@@ -119,21 +125,23 @@ class RegisterActivity : AppCompatActivity() {
 
                         val db = FirebaseFirestore.getInstance()
 
-                        // ✅ Check if user already exists
                         db.collection("users").document(userId).get()
                             .addOnSuccessListener { document ->
                                 if (document.exists()) {
-                                    // User already exists → don’t overwrite
                                     Toast.makeText(this, "Welcome back $name!", Toast.LENGTH_SHORT).show()
                                     startActivity(Intent(this, ChooseRoleActivity::class.java))
                                     finish()
                                 } else {
-                                    // New user → create record
+                                    // ✅ Generate compact username
+                                    val baseName = email.substringBefore("@").lowercase()
+                                    val shortUserName = baseName.take(8) + (100..999).random()
+
                                     val userData = hashMapOf(
                                         "uid" to userId,
                                         "name" to name,
                                         "email" to email,
                                         "photoUrl" to photoUrl,
+                                        "username" to shortUserName, // ✅ Added username
                                         "createdAt" to System.currentTimeMillis()
                                     )
 

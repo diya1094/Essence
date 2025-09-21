@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +21,10 @@ class SellerHomeActivity : AppCompatActivity() {
     private lateinit var listingsCount: TextView
     private lateinit var soldCount: TextView
 
+    private val db = FirebaseFirestore.getInstance()
+
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var notificationIcon: ImageView // 🔔 bell icon
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +38,47 @@ class SellerHomeActivity : AppCompatActivity() {
         soldCount = findViewById(R.id.sold_count)
 
         bottomNavigationView = findViewById(R.id.bottomNavigation)
+
+        // 🔔 find bell icon
+        notificationIcon = findViewById(R.id.notification_icon)
+
+        // 🔔 bell click -> fetch admin message
+        // 🔔 bell click -> fetch latest admin message
+        notificationIcon.setOnClickListener {
+            db.collection("admin_messages")
+                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        val latestMessage =
+                            documents.documents[0].getString("message") ?: "No message"
+                        NotificationHelper.showNotification(
+                            this,
+                            "Admin Message",
+                            latestMessage
+                        )
+                    } else {
+                        Toast.makeText(this, "No admin messages found", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Failed to fetch admin message", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+// 🔔 Real-time listener for admin messages
+        db.collection("admin_messages")
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(1)
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) return@addSnapshotListener
+                if (snapshots != null && !snapshots.isEmpty) {
+                    val latestMessage = snapshots.documents[0].getString("message") ?: "No message"
+                    NotificationHelper.showNotification(this, "Admin Message", latestMessage)
+                }
+            }
+
 
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userId = currentUser?.uid

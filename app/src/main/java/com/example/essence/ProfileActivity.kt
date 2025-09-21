@@ -2,7 +2,7 @@ package com.example.essence
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log // Import Log
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -15,21 +15,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ProfileActivity : AppCompatActivity() {
-
-    private val TAG = "ProfileActivity" // For logging
-
+    private val TAG = "ProfileActivity"
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var googleSignInClient: GoogleSignInClient
-
     private lateinit var tvName: TextView
     private lateinit var tvEmail: TextView
     private lateinit var tvRole: TextView
-    private lateinit var tvUserId: TextView
+    private lateinit var tvUserName: TextView
     private lateinit var btnLogout: Button
     private lateinit var bottomNavigationView: BottomNavigationView
-
-    private val SELLER_ID_FIELD_IN_PROPERTIES = "userId" //
+    private val SELLER_ID_FIELD_IN_PROPERTIES = "userId"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +43,7 @@ class ProfileActivity : AppCompatActivity() {
         tvName = findViewById(R.id.tvName)
         tvEmail = findViewById(R.id.tvEmail)
         tvRole = findViewById(R.id.tvRole)
-        tvUserId = findViewById(R.id.tvUserId) // Make sure this ID exists in R.layout.activity_profile_user
+        tvUserName = findViewById(R.id.tvUserName)
         btnLogout = findViewById(R.id.btnLogout)
         bottomNavigationView = findViewById(R.id.bottomNavigation)
 
@@ -61,7 +57,7 @@ class ProfileActivity : AppCompatActivity() {
         }
         Log.d(TAG, "Current User UID: ${currentUser.uid}")
 
-        firestore.collection("users") // Ensure this collection name "users" is correct
+        firestore.collection("users")
             .document(currentUser.uid)
             .get()
             .addOnSuccessListener { document ->
@@ -69,23 +65,22 @@ class ProfileActivity : AppCompatActivity() {
                     Log.d(TAG, "User document found: ${document.data}")
                     val name = document.getString("name") ?: "N/A"
                     val email = document.getString("email") ?: currentUser.email ?: "N/A"
-                    val role = document.getString("role") ?: "" // Default to empty string to trigger ChooseRole
+                    val role = document.getString("role") ?: ""
+                    val username = document.getString("username") ?: "N/A"
 
                     tvName.text = name
                     tvEmail.text = email
                     tvRole.text = if (role.isEmpty()) "Unknown Role" else role.replaceFirstChar { it.titlecase() }
-                    tvUserId.text = "${currentUser.uid}" // Display UID for debugging or info
+                    tvUserName.text = username
 
                     if (role.isEmpty()) {
                         Log.i(TAG, "Role is empty. Redirecting to ChooseRoleActivity.")
                         startActivity(Intent(this, ChooseRoleActivity::class.java))
                         finish()
                     } else {
-                        // Check if navigating from login flow to redirect immediately
                         if (intent.getBooleanExtra("fromLogin", false)) {
                             Log.d(TAG, "Navigating from login, calling redirectToHome.")
                             redirectToHome(role, currentUser.uid)
-                            // `redirectToHome` will call finish(), so no further processing here
                         } else {
                             Log.d(TAG, "Setting up bottom navigation for role: $role")
                             setupBottomNavigation(role, currentUser.uid)
@@ -93,7 +88,6 @@ class ProfileActivity : AppCompatActivity() {
                     }
                 } else {
                     Log.w(TAG, "User document for UID ${currentUser.uid} does not exist. Redirecting to ChooseRoleActivity.")
-                    // No user document in Firestore -> force role choosing (or registration if that's your flow)
                     startActivity(Intent(this, ChooseRoleActivity::class.java))
                     finish()
                 }
@@ -101,13 +95,11 @@ class ProfileActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error loading profile document for UID ${currentUser.uid}", e)
                 Toast.makeText(this, "Error loading profile: ${e.message}", Toast.LENGTH_SHORT).show()
-                // Fallback: maybe allow logout or show limited info
                 tvName.text = "Error"
                 tvEmail.text = "N/A"
                 tvRole.text = "N/A"
-                tvUserId.text = "UID: ${currentUser.uid}"
-                // Potentially setup a default bottom nav or disable it
-                setupBottomNavigation("buyer", currentUser.uid) // Example default
+                tvUserName.text = "N/A"
+                setupBottomNavigation("buyer", currentUser.uid)
             }
 
         btnLogout.setOnClickListener {
@@ -123,7 +115,7 @@ class ProfileActivity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-            finishAffinity() // Finishes this activity and all activities immediately below it
+            finishAffinity()
         }
     }
 
@@ -142,12 +134,12 @@ class ProfileActivity : AppCompatActivity() {
                         Log.i(TAG, "Seller $userId HAS properties. Redirecting to SellerHomeActivity from login.")
                         startActivity(Intent(this, SellerHomeActivity::class.java))
                     }
-                    finish() // Finish ProfileActivity as it was an intermediate step from login
+                    finish()
                 }
                 .addOnFailureListener { e ->
                     Log.e(TAG, "Error checking properties in redirectToHome for seller $userId", e)
                     Toast.makeText(this, "Error determining seller home. Defaulting.", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, SellerHomeActivity::class.java)) // Default seller home
+                    startActivity(Intent(this, SellerHomeActivity::class.java))
                     finish()
                 }
         } else if (role.equals("buyer", ignoreCase = true)) {
@@ -166,44 +158,37 @@ class ProfileActivity : AppCompatActivity() {
         if (role.equals("seller", ignoreCase = true)) {
             Log.d(TAG, "Inflating seller_bottom_nav_menu.")
             bottomNavigationView.inflateMenu(R.menu.seller_bottom_nav_menu)
-        } else { // Defaults to buyer
+        } else {
             Log.d(TAG, "Inflating buyer_bottom_nav_menu.")
             bottomNavigationView.inflateMenu(R.menu.buyer_bottom_nav_menu)
         }
 
-        bottomNavigationView.selectedItemId = R.id.nav_profile // Highlight current page
+        bottomNavigationView.selectedItemId = R.id.nav_profile
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
                     if (role.equals("seller", ignoreCase = true)) {
-                        Log.d(TAG, "BottomNav Home clicked for seller: $userId. Checking properties with field '$SELLER_ID_FIELD_IN_PROPERTIES'.")
                         firestore.collection("properties")
                             .whereEqualTo(SELLER_ID_FIELD_IN_PROPERTIES, userId)
                             .limit(1)
                             .get()
                             .addOnSuccessListener { querySnapshot ->
                                 val targetClass = if (querySnapshot.isEmpty) {
-                                    Log.i(TAG, "Seller $userId has NO properties. Navigating to SellerHomeActivity2 from BottomNav.")
                                     SellerHomeActivity2::class.java
                                 } else {
-                                    Log.i(TAG, "Seller $userId HAS properties. Navigating to SellerHomeActivity from BottomNav.")
                                     SellerHomeActivity::class.java
                                 }
                                 val intent = Intent(this, targetClass)
                                 intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                 startActivity(intent)
-                                // Do NOT finish ProfileActivity here if user is just switching tabs
                             }
-                            .addOnFailureListener { e ->
-                                Log.e(TAG, "Error checking properties in BottomNav Home for seller $userId", e)
-                                Toast.makeText(this, "Error navigating home. Defaulting.", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, SellerHomeActivity::class.java) // Default seller home
+                            .addOnFailureListener {
+                                val intent = Intent(this, SellerHomeActivity::class.java)
                                 intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                 startActivity(intent)
                             }
                     } else {
-                        Log.i(TAG, "BottomNav Home clicked for buyer/other. Navigating to BuyerMainActivity.")
                         val intent = Intent(this, BuyerMainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP
                         startActivity(intent)
@@ -213,11 +198,15 @@ class ProfileActivity : AppCompatActivity() {
                 R.id.nav_list -> {
                     val intent = Intent(this, SellerListingActivity::class.java)
                     startActivity(intent)
-                    Log.d(TAG, "List tab clicked. Already here.")
                     true
                 }
-                R.id.nav_profile -> {
-                    Log.d(TAG, "Profile tab clicked. Already here.")
+                R.id.nav_saved -> {
+                    if (role.equals("buyer", ignoreCase = true)) {
+                        val intent = Intent(this, SavedActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        Log.d(TAG, "Profile tab clicked. Already here for seller.")
+                    }
                     true
                 }
                 else -> false

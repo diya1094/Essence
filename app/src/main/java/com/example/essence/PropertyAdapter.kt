@@ -121,9 +121,13 @@ class PropertyAdapter(
                 .create()
 
             btnSubmit.setOnClickListener {
-                val reason = input.text.toString().ifEmpty { "No reason provided" }
-                onSubmit(reason)
-                dialog.dismiss()
+                val reason = input.text.toString().trim()
+                if (reason.isEmpty()) {
+                    input.error = "Reason required"
+                } else {
+                    onSubmit(reason)
+                    dialog.dismiss()
+                }
             }
 
             btnCancel.setOnClickListener {

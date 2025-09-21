@@ -3,15 +3,11 @@ package com.example.essence
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 
@@ -36,8 +32,8 @@ class AdminActivity : AppCompatActivity() {
         adapter = PropertyAdapter(
             propertyList,
             onApprove = { property -> updatePropertyStatus(property, "approved") },
-            onReject = { property, _ -> showMessageDialog(property, "rejected") },
-            onRequestChange = { property, _ -> showMessageDialog(property, "changes_requested") }
+            onReject = { property, reason -> updatePropertyStatus(property, "rejected", reason) },
+            onRequestChange = { property, reason -> updatePropertyStatus(property, "changes_requested", reason) }
         )
         recyclerView.adapter = adapter
 
@@ -121,36 +117,6 @@ class AdminActivity : AppCompatActivity() {
                 Log.e("AdminActivity", "Error loading properties: ${e.message}", e)
                 Toast.makeText(this, "Error loading properties: ${e.message}", Toast.LENGTH_LONG).show()
             }
-    }
-
-    private fun showMessageDialog(property: Property, status: String) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_request_changes, null)
-
-        val etReason = dialogView.findViewById<TextInputEditText>(R.id.etReason)
-        val btnCancel = dialogView.findViewById<AppCompatButton>(R.id.btnCancel)
-        val btnSubmit = dialogView.findViewById<AppCompatButton>(R.id.btnSubmit)
-
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        btnSubmit.setOnClickListener {
-            val reason = etReason.text.toString().trim()
-            if (reason.isEmpty()) {
-                Toast.makeText(this, "Please enter a reason", Toast.LENGTH_SHORT).show()
-            } else {
-                updatePropertyStatus(property, status, reason)
-                dialog.dismiss()
-            }
-        }
-
-        dialog.show()
     }
 
     private fun updatePropertyStatus(property: Property, newStatus: String, message: String? = null) {

@@ -28,6 +28,13 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        googleSignInClient.signOut()
 
         val currentUser = mAuth.currentUser
         if (currentUser != null) {
@@ -36,11 +43,6 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = "Login"
@@ -81,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
-                val account = task.getResult(Exception::class.java)!! // Added !! for conciseness assuming account is expected
+                val account = task.getResult(Exception::class.java)!!
                 Log.d(TAG, "Google Account ID Token: ${account.idToken}")
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                 mAuth.signInWithCredential(credential).addOnCompleteListener { authTask ->
@@ -116,8 +118,7 @@ class LoginActivity : AppCompatActivity() {
                 if (!doc.exists()) {
                     Log.i(TAG, "User $userId not found in 'users' collection. Redirecting to RegisterActivity.")
                     Toast.makeText(this, "New user. Please complete registration.", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, RegisterActivity::class.java).apply {
-                    })
+                    startActivity(Intent(this, RegisterActivity::class.java))
                     finish()
                 } else {
                     Log.i(TAG, "User $userId found in 'users' collection. Proceeding to check role.")
@@ -138,7 +139,6 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // Admin email check - DIRECT REDIRECT
         if (currentUser.email == ADMIN_EMAIL) {
             Log.d(TAG, "Admin email detected, redirecting to AdminActivity.")
             goToAdminActivity()
@@ -167,7 +167,6 @@ class LoginActivity : AppCompatActivity() {
                         Log.i(TAG, "User is a seller. Checking for existing properties...")
                         val sellerIdFieldInProperties = "userId"
 
-                        Log.d(TAG, "Querying 'properties' where '$sellerIdFieldInProperties' == '$userId'")
                         db.collection("properties")
                             .whereEqualTo(sellerIdFieldInProperties, userId)
                             .limit(1)
@@ -177,7 +176,7 @@ class LoginActivity : AppCompatActivity() {
                                     Log.i(TAG, "Seller $userId has NO properties. Redirecting to SellerHomeActivity2 (New Seller Page).")
                                     startActivity(Intent(this, SellerHomeActivity2::class.java))
                                 } else {
-                                    Log.i(TAG, "Seller $userId HAS properties (${propertyQuerySnapshot.size()} found with limit 1). Redirecting to SellerHomeActivity (Existing Seller Page).")
+                                    Log.i(TAG, "Seller $userId HAS properties. Redirecting to SellerHomeActivity (Existing Seller Page).")
                                     startActivity(Intent(this, SellerHomeActivity::class.java))
                                 }
                                 finish()
@@ -187,13 +186,13 @@ class LoginActivity : AppCompatActivity() {
                                 Toast.makeText(this, "Error checking seller properties. Please try again.", Toast.LENGTH_SHORT).show()
                             }
                     } else {
-                        Log.w(TAG, "Unknown user role: $role. Defaulting or showing error.")
+                        Log.w(TAG, "Unknown user role: $role. Defaulting to ChooseRoleActivity.")
                         Toast.makeText(this, "Unknown user role: $role", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(this, ChooseRoleActivity::class.java))
                         finish()
                     }
                 } else {
-                    Log.w(TAG, "User document for $userId does not exist in 'users' collection (should have been caught by checkIfUserExistsOrRedirect for Google Sign-In). Redirecting to RegisterActivity.")
+                    Log.w(TAG, "User document for $userId does not exist. Redirecting to RegisterActivity.")
                     Toast.makeText(this, "User profile not found. Please register.", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, RegisterActivity::class.java))
                     finish()

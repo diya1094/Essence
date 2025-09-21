@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- Top Bar -->
+    <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -16,9 +16,47 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginTop="25dp"
+        android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Notification container -->
+<!--    <FrameLayout-->
+<!--        android:id="@+id/notification_container"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="25dp"-->
+<!--        android:layout_marginEnd="16dp"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--        &lt;!&ndash; Bell Icon &ndash;&gt;-->
+<!--        <ImageView-->
+<!--            android:id="@+id/notification_icon"-->
+<!--            android:layout_width="32dp"-->
+<!--            android:layout_height="32dp"-->
+<!--            android:src="@drawable/ic_bell"-->
+<!--            android:contentDescription="Notifications"-->
+<!--            android:padding="4dp" />-->
+
+<!--        &lt;!&ndash; Badge (Count) &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/notification_badge"-->
+<!--            android:layout_width="18dp"-->
+<!--            android:layout_height="18dp"-->
+<!--            android:background="@drawable/badge_background"-->
+<!--            android:text="0"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textSize="10sp"-->
+<!--            android:gravity="center"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_gravity="end|top"-->
+<!--            android:translationX="6dp"-->
+<!--            android:translationY="-6dp"/>-->
+<!--    </FrameLayout>-->
+
+
 
     <!-- Search Bar -->
     <EditText
