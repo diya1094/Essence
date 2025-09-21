@@ -142,23 +142,25 @@ class UploadPropertyActivity : AppCompatActivity() {
         saveContinueBtn.setOnClickListener {
             if (!validateForm()) return@setOnClickListener
 
-            val intent = Intent(this, IdentityUploadActivity::class.java)
-            intent.putExtra("title", propertyTitle.text.toString())
-            intent.putExtra("description", propertyDescription.text.toString())
-            intent.putExtra("price", propertyPrice.text.toString())
-            intent.putExtra("address", propertyAddress.text.toString())
-            intent.putExtra("yearBuilt", yearBuiltInput.selectedItem?.toString() ?: "")
-            intent.putExtra("propertyType", typeOfPropertyInput.selectedItem?.toString() ?: "")
-            intent.putExtra("jointOwners", ArrayList(jointOwnerInputs.map {
-                arrayOf(
-                    it.first.text.toString(),
-                    it.second.text.toString(),
-                    it.third.text.toString()
+            // Store all property info in PropertySingleton
+            PropertySingleton.title = propertyTitle.text.toString()
+            PropertySingleton.description = propertyDescription.text.toString()
+            PropertySingleton.price = propertyPrice.text.toString()
+            PropertySingleton.address = propertyAddress.text.toString()
+            PropertySingleton.yearBuilt = yearBuiltInput.selectedItem?.toString() ?: ""
+            PropertySingleton.propertyType = typeOfPropertyInput.selectedItem?.toString() ?: ""
+            PropertySingleton.jointOwners = jointOwnerInputs.map {
+                mapOf(
+                    "name" to it.first.text.toString(),
+                    "email" to it.second.text.toString(),
+                    "relation" to it.third.text.toString()
                 )
-            }))
+            }
             PropertySingleton.imageUris = ArrayList(selectedFileUris)
+            val intent = Intent(this, IdentityUploadActivity::class.java)
             startActivity(intent)
         }
+
 
         supabaseUploadLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) {

@@ -1,6 +1,6 @@
 package com.example.essence
+import com.example.essence.PropertySingleton
 
-import PropertySingleton
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
