@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 
@@ -151,11 +152,14 @@ class AdminActivity : AppCompatActivity() {
                     }
                 }
 
+                // === BEGIN TIMESTAMP ADDITION ===
                 val msg = hashMapOf(
                     "propertyId" to property.propertyId,
                     "message" to (message ?: "Status updated to $newStatus"),
-                    "recipients" to recipients
+                    "recipients" to recipients,
+                    "timestamp" to FieldValue.serverTimestamp() // <--- ADD THIS LINE
                 )
+                // === END TIMESTAMP ADDITION ===
 
                 db.collection("adminMessages").add(msg)
                     .addOnSuccessListener {

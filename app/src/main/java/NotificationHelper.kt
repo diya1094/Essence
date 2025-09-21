@@ -1,6 +1,5 @@
 // NotificationHelper.kt
 import android.Manifest
-import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -10,7 +9,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
 object NotificationHelper {
-    private val CHANNEL_ID = "admin_messages_channel"
+    private const val CHANNEL_ID = "admin_messages_channel"
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Admin messages"
@@ -27,7 +26,7 @@ object NotificationHelper {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showNotification(context: Context, title: String, body: String, id: Int = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_dialog_info)
+            .setSmallIcon(com.example.essence.R.drawable.ic_bell) // use your real icon
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)

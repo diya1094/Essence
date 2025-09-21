@@ -3,7 +3,9 @@ package com.example.essence
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.storage.Storage
+
 object SupabaseManager {
+
     val supabase: SupabaseClient by lazy {
         createSupabaseClient(
             supabaseUrl = "https://zpwdakbyvqudpyaujkbe.supabase.co",
@@ -13,3 +15,4 @@ object SupabaseManager {
         }
     }
 }
+

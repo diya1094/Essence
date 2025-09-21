@@ -23,7 +23,17 @@ data class Property(
 
     var showApproveButton: Boolean = true,
     var showRejectButton: Boolean = true,
-    var showRequestChangeButton: Boolean = true
+    var showRequestChangeButton: Boolean = true,
+
+    val propertyImageUrls: List<String>? = null,
+    val titleDeedUrl: String? = null,
+    val nonDisputeUrl: String? = null,
+    val encumbranceUrl: String? = null,
+    val propertyTaxUrl: String? = null,
+    val mutationUrl: String? = null,
+    val possessionUrl: String? = null,
+    val nocUrl: String? = null,
+    val utilityBillUrl: String? = null,
 ) : Parcelable
 
 @Parcelize

@@ -20,7 +20,6 @@ class SellerHomeActivity : AppCompatActivity() {
     private lateinit var btnAddNewProperty: Button
     private lateinit var listingsCount: TextView
     private lateinit var soldCount: TextView
-
     private val db = FirebaseFirestore.getInstance()
 
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -39,48 +38,66 @@ class SellerHomeActivity : AppCompatActivity() {
 
         bottomNavigationView = findViewById(R.id.bottomNavigation)
 
-        // 🔔 find bell icon
         notificationIcon = findViewById(R.id.notification_icon)
 
-        // 🔔 bell click -> fetch admin message
-        // 🔔 bell click -> fetch latest admin message
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
         notificationIcon.setOnClickListener {
-            db.collection("admin_messages")
-                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                .limit(1)
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            currentUser?.email?.let { userEmail ->
+                db.collection("adminMessages")
+                    .whereArrayContains("recipients", userEmail)
+                    .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        Log.d("NotifDebug", "Queried for $userEmail, docs count: ${documents.size()}")
+                        for (doc in documents) {
+                            Log.d("NotifDebug", "Doc: ${doc.data}")
+                        }
+                        if (!documents.isEmpty) {
+                            val latestMessage = documents.documents[0].getString("message") ?: "No message"
+                            NotificationHelper.showNotification(
+                                this,
+                                "Admin Message",
+                                latestMessage
+                            )
+                            Toast.makeText(this, latestMessage, Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(this, "No admin messages found for you", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to fetch admin message: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            } ?: Toast.makeText(this, "No user signed in!", Toast.LENGTH_SHORT).show()
+        }
+
+
+        currentUser?.email?.let { userEmail ->
+            db.collection("adminMessages")
+                .whereArrayContains("recipients", userEmail)
                 .get()
                 .addOnSuccessListener { documents ->
                     if (!documents.isEmpty) {
-                        val latestMessage =
-                            documents.documents[0].getString("message") ?: "No message"
+                        val latestMessage = documents.documents.last().getString("message") ?: "No message"
                         NotificationHelper.showNotification(
                             this,
                             "Admin Message",
                             latestMessage
                         )
                     } else {
-                        Toast.makeText(this, "No admin messages found", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "No admin messages found for you", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "Failed to fetch admin message", Toast.LENGTH_SHORT).show()
                 }
+
         }
 
-// 🔔 Real-time listener for admin messages
-        db.collection("admin_messages")
-            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .limit(1)
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) return@addSnapshotListener
-                if (snapshots != null && !snapshots.isEmpty) {
-                    val latestMessage = snapshots.documents[0].getString("message") ?: "No message"
-                    NotificationHelper.showNotification(this, "Admin Message", latestMessage)
-                }
-            }
-
-
-        val currentUser = FirebaseAuth.getInstance().currentUser
         val userId = currentUser?.uid
 
         if (userId != null) {
@@ -122,8 +139,8 @@ class SellerHomeActivity : AppCompatActivity() {
                         for (doc in querySnapshot) {
                             val status = doc.getString("status") ?: "pending"
                             when (status.lowercase()) {
-                                "approved" -> activeCount++   // ✅ only approved counts as active
-                                "sold" -> soldCountValue++   // 📦 sold count separately
+                                "approved" -> activeCount++
+                                "sold" -> soldCountValue++
                             }
                         }
                         listingsCount.text = activeCount.toString()
