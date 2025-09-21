@@ -23,5 +23,6 @@ object PropertySingleton {
     var address: String? = null
     var yearBuilt: String? = null
     var propertyType: String? = null
+    var propertySize: String? = null
     var jointOwners: Any? = null // List<Map<...>> or whatever you use for joint owners
 }

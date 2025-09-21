@@ -32,7 +32,6 @@ class PaymentActivity : AppCompatActivity() {
             if (name.isEmpty() || card.isEmpty() || expiry.isEmpty() || cvv.isEmpty() || zip.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             } else {
-                // PAYMENT SUCCESS -- DO UPLOAD HERE!
                 uploadAllToSupabaseAndFirebase()
             }
         }
@@ -95,6 +94,7 @@ class PaymentActivity : AppCompatActivity() {
                     "description" to PropertySingleton.description,
                     "price" to PropertySingleton.price,
                     "address" to PropertySingleton.address,
+                    "propertySize" to PropertySingleton.propertySize,
                     "yearBuilt" to PropertySingleton.yearBuilt,
                     "propertyType" to PropertySingleton.propertyType,
                     "jointOwners" to PropertySingleton.jointOwners,
@@ -129,8 +129,6 @@ class PaymentActivity : AppCompatActivity() {
             }
         }
     }
-
-
     private fun updateAmountText() {
         binding.btnPay.text = "Pay $$amount"
     }

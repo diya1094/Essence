@@ -30,6 +30,7 @@ class PropertyDetailActivity : AppCompatActivity() {
         val tvPrice: TextView = findViewById(R.id.tvPrice)
         val tvYearBuilt: TextView = findViewById(R.id.tvYearBuilt)
         val tvPropertyType: TextView = findViewById(R.id.tvPropertyType)
+        val tvPropertySize: TextView = findViewById(R.id.tvSize)
 
         val btnContact: Button = findViewById(R.id.btnContact)
         val btnSave: Button = findViewById(R.id.btnSave)
@@ -41,6 +42,7 @@ class PropertyDetailActivity : AppCompatActivity() {
         tvPrice.text = "₹${property.price}"
         tvYearBuilt.text = property.yearBuilt
         tvPropertyType.text = property.propertyType
+        tvPropertySize.text = property.propertySize
 
         btnContact.setOnClickListener {
             Toast.makeText(this, "Contact seller: ${property.sellerEmail}", Toast.LENGTH_SHORT).show()

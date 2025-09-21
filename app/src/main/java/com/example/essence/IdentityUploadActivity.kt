@@ -1,6 +1,5 @@
 package com.example.essence
 
-import com.example.essence.PropertySingleton
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -15,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class IdentityUploadActivity : AppCompatActivity() {
-
     private var proofOfIdUri: Uri? = null
     private var proofOfAddressUri: Uri? = null
 

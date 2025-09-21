@@ -32,6 +32,7 @@ class UploadPropertyActivity : AppCompatActivity() {
     private lateinit var propertyAddress: EditText
     private lateinit var yearBuiltInput: Spinner
     private lateinit var typeOfPropertyInput: Spinner
+    private lateinit var propertySizeInput: EditText
     private lateinit var saveContinueBtn: Button
     private lateinit var jointOwnerCountSpinner: Spinner
     private lateinit var jointOwnerContainer: LinearLayout
@@ -53,6 +54,7 @@ class UploadPropertyActivity : AppCompatActivity() {
         propertyTitle = findViewById(R.id.title)
         propertyDescription = findViewById(R.id.propertyDescriptionInput)
         propertyPrice = findViewById(R.id.listingPriceInput)
+        propertySizeInput = findViewById(R.id.propertySizeInput)
         propertyAddress = findViewById(R.id.addressInput)
         yearBuiltInput = findViewById(R.id.yearBuiltInput)
         typeOfPropertyInput = findViewById(R.id.typeOfPropertyInput)
@@ -147,6 +149,7 @@ class UploadPropertyActivity : AppCompatActivity() {
             PropertySingleton.description = propertyDescription.text.toString()
             PropertySingleton.price = propertyPrice.text.toString()
             PropertySingleton.address = propertyAddress.text.toString()
+            PropertySingleton.propertySize = propertySizeInput.text.toString()
             PropertySingleton.yearBuilt = yearBuiltInput.selectedItem?.toString() ?: ""
             PropertySingleton.propertyType = typeOfPropertyInput.selectedItem?.toString() ?: ""
             PropertySingleton.jointOwners = jointOwnerInputs.map {

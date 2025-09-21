@@ -16,6 +16,7 @@ data class Property(
     var userId: String = "",
     var sellerName: String = "",
     var sellerEmail: String = "",
+    val propertySize: String? = null,
     var jointOwners: List<Owner> = emptyList(),
 
     var adminMessage: String? = null,
