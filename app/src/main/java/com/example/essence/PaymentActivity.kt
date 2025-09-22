@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.essence.databinding.ActivityPaymentBinding
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class PaymentActivity : AppCompatActivity() {
 
@@ -60,7 +61,10 @@ class PaymentActivity : AppCompatActivity() {
                     val name = "property_${System.currentTimeMillis()}_${System.nanoTime()}.jpg"
                     val storage = SupabaseManager.supabase.storage.from("Essence")
                     storage.upload(name, bytes)
-                    photoUrls.add(storage.publicUrl(name))
+                    val signedUrl = storage.createSignedUrl(name, 604800.seconds)
+                    val fullSignedUrl = "https://zpwdakbyvqudpyaujkbe.supabase.co/storage/v1/" + signedUrl
+                    photoUrls.add(fullSignedUrl)
+
                 }
                 // Upload docs -- suspend function!
                 suspend fun uploadDoc(uri: Uri?, prefix: String): String? {
@@ -69,8 +73,12 @@ class PaymentActivity : AppCompatActivity() {
                     val name = "${prefix}_${System.currentTimeMillis()}.pdf"
                     val storage = SupabaseManager.supabase.storage.from("Essence")
                     storage.upload(name, bytes)
-                    return storage.publicUrl(name)
+                    // Generate SIGNED URL, valid for 1 week (604800 seconds)
+                    val signedPath = storage.createSignedUrl(name, 604800.seconds)
+                    val fullSignedUrl = "https://zpwdakbyvqudpyaujkbe.supabase.co/storage/v1/" + signedPath
+                    return fullSignedUrl
                 }
+
                 val docLinks = mapOf(
                     "proofOfIdUrl" to uploadDoc(PropertySingleton.identityDocUri, "proof_of_id"),
                     "proofOfAddressUrl" to uploadDoc(PropertySingleton.addressDocUri, "proof_of_address"),

@@ -1,11 +1,13 @@
 package com.example.essence
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 
 class SellerListingItemAdapter(private val propertyList: List<Property>) :
@@ -15,6 +17,7 @@ class SellerListingItemAdapter(private val propertyList: List<Property>) :
         val propertyImage: ImageView = itemView.findViewById(R.id.propertyImage)
         val propertyTitle: TextView = itemView.findViewById(R.id.propertyTitle)
         val propertyPrice: TextView = itemView.findViewById(R.id.propertyPrice)
+        val editBtn: Button = itemView.findViewById(R.id.btnEditProperty)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyViewHolder {
@@ -30,11 +33,17 @@ class SellerListingItemAdapter(private val propertyList: List<Property>) :
         holder.propertyPrice.text = "₹${currentProperty.price}"
 
         holder.itemView.setOnClickListener {
-            Toast.makeText(
-                holder.itemView.context,
-                "Clicked: ${currentProperty.description}",
-                Toast.LENGTH_SHORT
-            ).show()
+            val intent = Intent(holder.itemView.context, SellerPropertyDetailActivity::class.java)
+            intent.putExtra("propertyId", currentProperty.propertyId)
+            holder.itemView.context.startActivity(intent)
+        }
+
+        // Show/hide edit button only for rejected/changes_requested properties
+        holder.editBtn.isVisible = currentProperty.status == "rejected" || currentProperty.status == "changes_requested"
+        holder.editBtn.setOnClickListener {
+            val intent = Intent(holder.itemView.context, UploadPropertyActivity::class.java)
+            intent.putExtra("propertyId", currentProperty.propertyId)
+            holder.itemView.context.startActivity(intent)
         }
     }
 

@@ -53,26 +53,33 @@ class SellerHomeActivity : AppCompatActivity() {
                     .limit(1)
                     .get()
                     .addOnSuccessListener { documents ->
-                        Log.d("NotifDebug", "Queried for $userEmail, docs count: ${documents.size()}")
-                        for (doc in documents) {
-                            Log.d("NotifDebug", "Doc: ${doc.data}")
-                        }
                         if (!documents.isEmpty) {
-                            val latestMessage = documents.documents[0].getString("message") ?: "No message"
-                            NotificationHelper.showNotification(
-                                this,
-                                "Admin Message",
-                                latestMessage
-                            )
-                            Toast.makeText(this, latestMessage, Toast.LENGTH_LONG).show()
+                            val doc = documents.documents[0]
+                            val latestMessage = doc.getString("message") ?: "No message"
+                            val propertyId = doc.getString("propertyId") ?: "Unknown Property"
+
+                            val dialogMsg = "Notification: $latestMessage\n\nProperty ID: $propertyId"
+                            androidx.appcompat.app.AlertDialog.Builder(this)
+                                .setTitle("Admin Notification")
+                                .setMessage(dialogMsg)
+                                .setPositiveButton("OK", null)
+                                .show()
                         } else {
-                            Toast.makeText(this, "No admin messages found for you", Toast.LENGTH_SHORT).show()
+                            androidx.appcompat.app.AlertDialog.Builder(this)
+                                .setTitle("Admin Notification")
+                                .setMessage("No admin messages found for you")
+                                .setPositiveButton("OK", null)
+                                .show()
                         }
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(this, "Failed to fetch admin message: ${e.message}", Toast.LENGTH_SHORT).show()
+                        androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setTitle("Admin Notification")
+                            .setMessage("Failed to fetch admin message: ${e.message}")
+                            .setPositiveButton("OK", null)
+                            .show()
                     }
-            } ?: Toast.makeText(this, "No user signed in!", Toast.LENGTH_SHORT).show()
+            }
         }
 
 

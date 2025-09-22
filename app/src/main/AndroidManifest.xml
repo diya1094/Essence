@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Essence"
         tools:targetApi="31">
         <activity
+            android:name=".SellerPropertyDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".AdditionalDocsActivity"
             android:exported="false" />
         <activity

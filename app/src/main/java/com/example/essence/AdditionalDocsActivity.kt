@@ -1,5 +1,4 @@
 package com.example.essence
-import com.example.essence.PropertySingleton
 
 import android.content.Intent
 import android.net.Uri
@@ -15,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class AdditionalDocsActivity : AppCompatActivity() {
-
     private val docTypes = listOf(
         "titleDeed", "nonDispute", "encumbrance", "propertyTax",
         "mutation", "possession", "noc", "utilityBill"

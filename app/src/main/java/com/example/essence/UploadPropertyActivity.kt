@@ -127,6 +127,53 @@ class UploadPropertyActivity : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+        val editPropertyId = intent.getStringExtra("propertyId")
+        if (editPropertyId != null) {
+            saveContinueBtn.text = "Update Property"
+            // Hide payment UI here if you have such a panel
+            // findViewById<View>(R.id.paymentPanel)?.visibility = View.GONE
+
+            db.collection("properties").document(editPropertyId).get()
+                .addOnSuccessListener { doc ->
+                    propertyTitle.setText(doc.getString("title") ?: "")
+                    propertyDescription.setText(doc.getString("description") ?: "")
+                    propertyPrice.setText(doc.getString("price") ?: "")
+                    propertyAddress.setText(doc.getString("address") ?: "")
+                    propertySizeInput.setText(doc.getString("propertySize") ?: "")
+                    // If needed, set yearBuilt/typeOfProperty/jointOwner/image fields here too
+                }
+        }
+
+        saveContinueBtn.setOnClickListener {
+            if (!validateForm()) return@setOnClickListener
+
+            val updatedPropertyData = hashMapOf(
+                "title" to propertyTitle.text.toString(),
+                "description" to propertyDescription.text.toString(),
+                "price" to propertyPrice.text.toString(),
+                "address" to propertyAddress.text.toString(),
+                "propertySize" to propertySizeInput.text.toString(),
+                "yearBuilt" to yearBuiltInput.selectedItem?.toString(),
+                "propertyType" to typeOfPropertyInput.selectedItem?.toString()
+                // Include any additional fields as necessary
+            )
+
+            if (editPropertyId != null) {
+                db.collection("properties").document(editPropertyId)
+                    .set(updatedPropertyData, com.google.firebase.firestore.SetOptions.merge())
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Property updated!", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Failed to update property.", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                val intent = Intent(this, IdentityUploadActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
 
         val yearOptions = listOf("less than a year", "1", "2", "3", "4", "5", "5+", "10+", "15+", "20+")
         val yearAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, yearOptions)

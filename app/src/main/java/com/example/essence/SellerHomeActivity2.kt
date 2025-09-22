@@ -29,7 +29,7 @@ class SellerHomeActivity2 : AppCompatActivity() {
         NotificationHelper.createNotificationChannel(this)
         tvWelcomeMessage = findViewById(R.id.tvWelcome)
         btnAddNewProperty = findViewById(R.id.btnAddNewProperty)
-        notificationIcon = findViewById(R.id.notification_icon) // 🔔 bell icon
+        notificationIcon = findViewById(R.id.notification_icon)
 
         bottomNavigationView = findViewById(R.id.bottomNavigation)
 
