@@ -6,6 +6,7 @@ object PropertySingleton {
     var imageUris: ArrayList<Uri> = ArrayList()
     var identityDocUri: Uri? = null
     var addressDocUri: Uri? = null
+    var editPropertyId: String? = null
 
     var titleDeedUri: Uri? = null
     var nonDisputeUri: Uri? = null

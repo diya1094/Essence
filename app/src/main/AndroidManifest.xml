@@ -18,6 +18,27 @@
         android:theme="@style/Theme.Essence"
         tools:targetApi="31">
         <activity
+            android:name=".PropertyDocumentAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".BuyerPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BuyerDocumentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BuyerDocumentAcitivity"
+            android:exported="false" />
+        <activity
+            android:name=".FullScreenImageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PropertyImageAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".BuyerSavedAdapter"
+            android:exported="false" />
+        <activity
             android:name=".SellerPropertyDetailActivity"
             android:exported="false" />
         <activity

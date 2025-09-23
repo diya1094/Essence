@@ -1,0 +1,24 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/buyerDocRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <TextView
+        android:id="@+id/tvDocTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Documents"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginBottom="14dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/docsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"/>
+</LinearLayout>

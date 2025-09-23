@@ -48,6 +48,9 @@ class IdentityUploadActivity : AppCompatActivity() {
         addressLayout = findViewById(R.id.addressCard)
         continueToNextDocBtn = findViewById(R.id.continueToPaymentBtn)
 
+        proofOfIdUri = PropertySingleton.identityDocUri
+        proofOfAddressUri = PropertySingleton.addressDocUri
+
         idLayout.setOnClickListener { if (proofOfIdUri == null) selectProofOfId.launch("application/pdf") }
         addressLayout.setOnClickListener { if (proofOfAddressUri == null) selectProofOfAddress.launch("application/pdf") }
         continueToNextDocBtn.setOnClickListener { goToNextDocActivity() }
@@ -65,56 +68,40 @@ class IdentityUploadActivity : AppCompatActivity() {
         val nextDocIntent = Intent(this, AdditionalDocsActivity::class.java)
         startActivity(nextDocIntent)
         finish()
-
     }
 
     private fun updateDocBoxes() {
-        showDocBox(
-            idLayout,
-            proofOfIdUri,
-            "Upload Government ID (PDF)",
-            onRemove = {
-                proofOfIdUri = null
-                updateDocBoxes()
-                tryEnableContinue()
-            }
-        )
-        showDocBox(
-            addressLayout,
-            proofOfAddressUri,
-            "Upload Proof of Address (PDF)",
-            onRemove = {
-                proofOfAddressUri = null
-                updateDocBoxes()
-                tryEnableContinue()
-            }
-        )
+        showDocBox(idLayout, proofOfIdUri, "Upload Government ID (PDF)", onRemove = {
+            proofOfIdUri = null
+            updateDocBoxes()
+            tryEnableContinue()
+        })
+        showDocBox(addressLayout, proofOfAddressUri, "Upload Proof of Address (PDF)", onRemove = {
+            proofOfAddressUri = null
+            updateDocBoxes()
+            tryEnableContinue()
+        })
     }
 
     private fun showDocBox(card: LinearLayout, uri: Uri?, label: String, onRemove: () -> Unit) {
         card.removeAllViews()
         val pad = 10
         card.setPadding(pad, pad, pad, pad)
-
         val context = card.context
         val icon = ImageView(context)
         icon.setImageResource(R.drawable.ic_file)
         icon.layoutParams = LinearLayout.LayoutParams(64, 64)
         icon.setPadding(6, 0, 16, 0)
-
         card.orientation = LinearLayout.HORIZONTAL
         card.addView(icon)
-
         if (uri != null) {
             val fileText = TextView(context)
             fileText.text = getFileName(uri)
             fileText.textSize = 14f
-
             val removeBtn = ImageButton(context)
             removeBtn.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
             removeBtn.setBackgroundColor(0x00000000)
             removeBtn.setOnClickListener { onRemove() }
-
             card.addView(fileText)
             card.addView(removeBtn)
         } else {
@@ -135,10 +122,8 @@ class IdentityUploadActivity : AppCompatActivity() {
         }
         return name
     }
-
     private fun isPdf(uri: Uri): Boolean =
         contentResolver.getType(uri) == "application/pdf"
-
     private fun isFileSizeOk(uri: Uri): Boolean {
         val fd = contentResolver.query(uri, null, null, null, null)
         val size = if (fd != null && fd.moveToFirst()) {

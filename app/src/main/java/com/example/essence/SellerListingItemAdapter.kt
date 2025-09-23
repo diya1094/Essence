@@ -29,7 +29,7 @@ class SellerListingItemAdapter(private val propertyList: List<Property>) :
     override fun onBindViewHolder(holder: PropertyViewHolder, position: Int) {
         val currentProperty = propertyList[position]
 
-        holder.propertyTitle.text = currentProperty.description
+        holder.propertyTitle.text = currentProperty.title
         holder.propertyPrice.text = "₹${currentProperty.price}"
 
         holder.itemView.setOnClickListener {

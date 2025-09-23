@@ -9,26 +9,14 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class AdditionalDocsActivity : AppCompatActivity() {
-    private val docTypes = listOf(
-        "titleDeed", "nonDispute", "encumbrance", "propertyTax",
-        "mutation", "possession", "noc", "utilityBill"
-    )
-    private val docTitles = listOf(
-        "Proof of ownership (Title deed)",
-        "No Dispute Affidavit",
-        "Encumbrance Certificate",
-        "Property tax receipt",
-        "Mutation Document",
-        "Possession Letter",
-        "No Objection Certificate (NOC)",
-        "Utility Bill Receipts"
-    )
-
+    private val docTypes = listOf("titleDeed", "nonDispute", "encumbrance", "propertyTax", "mutation", "possession", "noc", "utilityBill")
+    private val docTitles = listOf("Proof of ownership (Title deed)", "No Dispute Affidavit", "Encumbrance Certificate", "Property tax receipt", "Mutation Document", "Possession Letter", "No Objection Certificate (NOC)", "Utility Bill Receipts")
     private val selectedDocUris = mutableMapOf<String, Uri?>()
     private val pickerLaunchers = mutableMapOf<String, ActivityResultLauncher<String>>()
     private lateinit var submitBtn: Button
@@ -36,12 +24,19 @@ class AdditionalDocsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_additional_docs)
-
         submitBtn = findViewById(R.id.submitBtn)
         submitBtn.setOnClickListener { storeUrisAndProceed() }
         submitBtn.isEnabled = false
 
-        // Setup pickers & UI for each doc
+        selectedDocUris["titleDeed"] = PropertySingleton.titleDeedUri
+        selectedDocUris["nonDispute"] = PropertySingleton.nonDisputeUri
+        selectedDocUris["encumbrance"] = PropertySingleton.encumbranceUri
+        selectedDocUris["propertyTax"] = PropertySingleton.propertyTaxUri
+        selectedDocUris["mutation"] = PropertySingleton.mutationUri
+        selectedDocUris["possession"] = PropertySingleton.possessionUri
+        selectedDocUris["noc"] = PropertySingleton.nocUri
+        selectedDocUris["utilityBill"] = PropertySingleton.utilityBillUri
+
         for (i in docTypes.indices) {
             val docType = docTypes[i]
             val docTitle = docTitles[i]
@@ -51,30 +46,28 @@ class AdditionalDocsActivity : AppCompatActivity() {
             val pickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
                 if (uri != null) {
                     selectedDocUris[docType] = uri
-                    setupDocCard(card, docType, docTitle) // Refresh
+                    setupDocCard(card, docType, docTitle)
                     tryEnableSubmit()
                 }
             }
             pickerLaunchers[docType] = pickerLauncher
         }
+        tryEnableSubmit()
     }
 
     private fun setupDocCard(card: LinearLayout, docType: String, docTitle: String) {
         card.removeAllViews()
         card.orientation = LinearLayout.HORIZONTAL
-
         val icon = ImageView(card.context)
         icon.setImageResource(R.drawable.ic_file)
         icon.layoutParams = LinearLayout.LayoutParams(70, 70)
         icon.setPadding(6, 0, 16, 0)
         card.addView(icon)
-
         val existing = selectedDocUris[docType]
         if (existing != null) {
             val fileNameView = TextView(card.context)
             fileNameView.text = getFileName(existing)
             fileNameView.textSize = 15f
-
             val removeBtn = ImageButton(card.context)
             removeBtn.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
             removeBtn.setBackgroundColor(0x00000000)
@@ -83,10 +76,8 @@ class AdditionalDocsActivity : AppCompatActivity() {
                 setupDocCard(card, docType, docTitle)
                 tryEnableSubmit()
             }
-
             card.addView(fileNameView)
             card.addView(removeBtn)
-            // Disable card click, only "X" works for removal
             card.setOnClickListener(null)
         } else {
             val docLabel = TextView(card.context)
@@ -121,7 +112,47 @@ class AdditionalDocsActivity : AppCompatActivity() {
         PropertySingleton.possessionUri = selectedDocUris["possession"]
         PropertySingleton.nocUri = selectedDocUris["noc"]
         PropertySingleton.utilityBillUri = selectedDocUris["utilityBill"]
-        val intent = Intent(this, PaymentActivity::class.java)
-        startActivity(intent)
+
+        // Only update property, then return to seller home if editing
+        if (PropertySingleton.editPropertyId != null) {
+            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            val docUpdate = mapOf(
+                "title" to PropertySingleton.title,
+                "description" to PropertySingleton.description,
+                "price" to PropertySingleton.price,
+                "address" to PropertySingleton.address,
+                "propertySize" to PropertySingleton.propertySize,
+                "yearBuilt" to PropertySingleton.yearBuilt,
+                "propertyType" to PropertySingleton.propertyType,
+                "jointOwners" to PropertySingleton.jointOwners,
+                "propertyImageUrls" to PropertySingleton.imageUris.map { it.toString() },
+                "proofOfIdUrl" to PropertySingleton.identityDocUri?.toString(),
+                "proofOfAddressUrl" to PropertySingleton.addressDocUri?.toString(),
+                "titleDeedUrl" to PropertySingleton.titleDeedUri?.toString(),
+                "nonDisputeUrl" to PropertySingleton.nonDisputeUri?.toString(),
+                "encumbranceUrl" to PropertySingleton.encumbranceUri?.toString(),
+                "propertyTaxUrl" to PropertySingleton.propertyTaxUri?.toString(),
+                "mutationUrl" to PropertySingleton.mutationUri?.toString(),
+                "possessionUrl" to PropertySingleton.possessionUri?.toString(),
+                "nocUrl" to PropertySingleton.nocUri?.toString(),
+                "utilityBillUrl" to PropertySingleton.utilityBillUri?.toString(),
+                "status" to "pending"
+            )
+            db.collection("properties").document(PropertySingleton.editPropertyId!!)
+                .update(docUpdate)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Property update sent for admin reverification!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, SellerHomeActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Docs update failed!", Toast.LENGTH_LONG).show()
+                }
+        } else {
+            val intent = Intent(this, PaymentActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

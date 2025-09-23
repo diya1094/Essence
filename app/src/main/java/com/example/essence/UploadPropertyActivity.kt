@@ -23,7 +23,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class UploadPropertyActivity : AppCompatActivity() {
-
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var propertyTitle: EditText
@@ -36,13 +35,12 @@ class UploadPropertyActivity : AppCompatActivity() {
     private lateinit var saveContinueBtn: Button
     private lateinit var jointOwnerCountSpinner: Spinner
     private lateinit var jointOwnerContainer: LinearLayout
-
     private val jointOwnerInputs = mutableListOf<Triple<EditText, EditText, EditText>>()
-
     private lateinit var supabaseUploadLauncher: ActivityResultLauncher<String>
     private lateinit var uploadPhotoLayout: LinearLayout
     private val selectedFileUris = mutableListOf<Uri>()
-    private val uploadedFileUrls = mutableListOf<String>()
+    private var editPropertyId: String? = null
+    private var editMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +48,6 @@ class UploadPropertyActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
-
         propertyTitle = findViewById(R.id.title)
         propertyDescription = findViewById(R.id.propertyDescriptionInput)
         propertyPrice = findViewById(R.id.listingPriceInput)
@@ -63,10 +60,16 @@ class UploadPropertyActivity : AppCompatActivity() {
         jointOwnerContainer = findViewById(R.id.jointOwnerContainer)
         uploadPhotoLayout = findViewById(R.id.uploadPhotoLayout)
 
+        val yearOptions = listOf("less than a year", "1", "2", "3", "4", "5", "5+", "10+", "15+", "20+")
+        val propertyTypes = listOf(
+            "Apartment/Flat", "Villa", "Condominiums", "Row House",
+            "Penthouse", "Studio", "Bungalows", "Haveli", "Other"
+        )
         val ownerCounts = (0..5).map { it.toString() }
         val ownerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, ownerCounts)
         ownerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         jointOwnerCountSpinner.adapter = ownerAdapter
+
         jointOwnerCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
                 val count = ownerCounts[position].toInt()
@@ -76,7 +79,6 @@ class UploadPropertyActivity : AppCompatActivity() {
                     val ownerLayout = LinearLayout(this@UploadPropertyActivity)
                     ownerLayout.orientation = LinearLayout.VERTICAL
                     ownerLayout.setPadding(0, 16, 0, 16)
-
                     val nameLabel = TextView(this@UploadPropertyActivity).apply {
                         text = "Joint Owner $i Name"
                         setTextAppearance(android.R.style.TextAppearance_Medium)
@@ -87,7 +89,6 @@ class UploadPropertyActivity : AppCompatActivity() {
                         setBackgroundResource(R.drawable.rounded_box)
                         setPadding(20, 20, 20, 20)
                     }
-
                     val emailLabel = TextView(this@UploadPropertyActivity).apply {
                         text = "Joint Owner $i Email"
                         setTextAppearance(android.R.style.TextAppearance_Medium)
@@ -99,7 +100,6 @@ class UploadPropertyActivity : AppCompatActivity() {
                         setBackgroundResource(R.drawable.rounded_box)
                         setPadding(20, 20, 20, 20)
                     }
-
                     val relationLabel = TextView(this@UploadPropertyActivity).apply {
                         text = "Phone Number"
                         setTextAppearance(android.R.style.TextAppearance_Medium)
@@ -112,86 +112,116 @@ class UploadPropertyActivity : AppCompatActivity() {
                         setBackgroundResource(R.drawable.rounded_box)
                         setPadding(20, 20, 20, 20)
                     }
-
                     ownerLayout.addView(nameLabel)
                     ownerLayout.addView(nameInput)
                     ownerLayout.addView(emailLabel)
                     ownerLayout.addView(emailInput)
                     ownerLayout.addView(relationLabel)
                     ownerLayout.addView(relationInput)
-
                     jointOwnerContainer.addView(ownerLayout)
                     jointOwnerInputs.add(Triple(nameInput, emailInput, relationInput))
                 }
             }
-
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-        val editPropertyId = intent.getStringExtra("propertyId")
-        if (editPropertyId != null) {
-            saveContinueBtn.text = "Update Property"
-            // Hide payment UI here if you have such a panel
-            // findViewById<View>(R.id.paymentPanel)?.visibility = View.GONE
+        val yearAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, yearOptions)
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        yearBuiltInput.adapter = yearAdapter
 
-            db.collection("properties").document(editPropertyId).get()
+        val propertyAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, propertyTypes)
+        propertyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        typeOfPropertyInput.adapter = propertyAdapter
+
+        editPropertyId = intent.getStringExtra("propertyId")
+        editMode = editPropertyId != null
+        PropertySingleton.editPropertyId = editPropertyId
+
+        if (editMode) {
+            saveContinueBtn.text = "Update Property"
+            db.collection("properties").document(editPropertyId!!).get()
                 .addOnSuccessListener { doc ->
                     propertyTitle.setText(doc.getString("title") ?: "")
                     propertyDescription.setText(doc.getString("description") ?: "")
                     propertyPrice.setText(doc.getString("price") ?: "")
                     propertyAddress.setText(doc.getString("address") ?: "")
                     propertySizeInput.setText(doc.getString("propertySize") ?: "")
-                    // If needed, set yearBuilt/typeOfProperty/jointOwner/image fields here too
+                    doc.getString("yearBuilt")?.let { year ->
+                        val pos = (yearOptions.indexOf(year)).takeIf { it >= 0 } ?: 0
+                        yearBuiltInput.setSelection(pos)
+                    }
+                    doc.getString("propertyType")?.let { type ->
+                        val pos = (propertyTypes.indexOf(type)).takeIf { it >= 0 } ?: 0
+                        typeOfPropertyInput.setSelection(pos)
+                    }
+                    val ownersAny = doc.get("jointOwners")
+                    if (ownersAny is List<*>) {
+                        jointOwnerCountSpinner.setSelection(ownersAny.size)
+                        jointOwnerContainer.removeAllViews()
+                        jointOwnerInputs.clear()
+                        for ((i, ownerAny) in ownersAny.withIndex()) {
+                            val ownerMap = ownerAny as? Map<*, *>
+                            val name = ownerMap?.get("name")?.toString() ?: ""
+                            val email = ownerMap?.get("email")?.toString() ?: ""
+                            val relation = ownerMap?.get("relation")?.toString() ?: ""
+                            val ownerLayout = LinearLayout(this@UploadPropertyActivity)
+                            ownerLayout.orientation = LinearLayout.VERTICAL
+                            ownerLayout.setPadding(0, 16, 0, 16)
+                            val nameLabel = TextView(this@UploadPropertyActivity)
+                            nameLabel.text = "Joint Owner ${i+1} Name"
+                            val nameInput = EditText(this@UploadPropertyActivity)
+                            nameInput.setText(name)
+                            nameInput.hint = "Enter name"
+                            nameInput.setBackgroundResource(R.drawable.rounded_box)
+                            nameInput.setPadding(20, 20, 20, 20)
+                            val emailLabel = TextView(this@UploadPropertyActivity)
+                            emailLabel.text = "Joint Owner ${i+1} Email"
+                            val emailInput = EditText(this@UploadPropertyActivity)
+                            emailInput.setText(email)
+                            emailInput.hint = "Enter email"
+                            emailInput.inputType = android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                            emailInput.setBackgroundResource(R.drawable.rounded_box)
+                            emailInput.setPadding(20, 20, 20, 20)
+                            val relationLabel = TextView(this@UploadPropertyActivity)
+                            relationLabel.text = "Phone Number"
+                            val relationInput = EditText(this@UploadPropertyActivity)
+                            relationInput.setText(relation)
+                            relationInput.hint = "Enter Phone Number"
+                            relationInput.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+                            relationInput.filters = arrayOf(android.text.InputFilter.LengthFilter(10))
+                            relationInput.setBackgroundResource(R.drawable.rounded_box)
+                            relationInput.setPadding(20, 20, 20, 20)
+                            ownerLayout.addView(nameLabel)
+                            ownerLayout.addView(nameInput)
+                            ownerLayout.addView(emailLabel)
+                            ownerLayout.addView(emailInput)
+                            ownerLayout.addView(relationLabel)
+                            ownerLayout.addView(relationInput)
+                            jointOwnerContainer.addView(ownerLayout)
+                            jointOwnerInputs.add(Triple(nameInput, emailInput, relationInput))
+                        }
+                    }
+                    val photoUrlsAny = doc.get("propertyImageUrls")
+                    if (photoUrlsAny is List<*>) {
+                        selectedFileUris.clear()
+                        photoUrlsAny.forEach { url -> url?.let { selectedFileUris.add(Uri.parse(url.toString())) } }
+                        showSelectedImages()
+                        PropertySingleton.imageUris = ArrayList(selectedFileUris)
+                    }
+                    PropertySingleton.identityDocUri = doc.getString("proofOfIdUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.addressDocUri = doc.getString("proofOfAddressUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.titleDeedUri = doc.getString("titleDeedUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.nonDisputeUri = doc.getString("nonDisputeUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.encumbranceUri = doc.getString("encumbranceUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.propertyTaxUri = doc.getString("propertyTaxUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.mutationUri = doc.getString("mutationUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.possessionUri = doc.getString("possessionUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.nocUri = doc.getString("nocUrl")?.let { Uri.parse(it) }
+                    PropertySingleton.utilityBillUri = doc.getString("utilityBillUrl")?.let { Uri.parse(it) }
                 }
         }
 
         saveContinueBtn.setOnClickListener {
             if (!validateForm()) return@setOnClickListener
-
-            val updatedPropertyData = hashMapOf(
-                "title" to propertyTitle.text.toString(),
-                "description" to propertyDescription.text.toString(),
-                "price" to propertyPrice.text.toString(),
-                "address" to propertyAddress.text.toString(),
-                "propertySize" to propertySizeInput.text.toString(),
-                "yearBuilt" to yearBuiltInput.selectedItem?.toString(),
-                "propertyType" to typeOfPropertyInput.selectedItem?.toString()
-                // Include any additional fields as necessary
-            )
-
-            if (editPropertyId != null) {
-                db.collection("properties").document(editPropertyId)
-                    .set(updatedPropertyData, com.google.firebase.firestore.SetOptions.merge())
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Property updated!", Toast.LENGTH_SHORT).show()
-                        finish()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Failed to update property.", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                val intent = Intent(this, IdentityUploadActivity::class.java)
-                startActivity(intent)
-            }
-        }
-
-
-        val yearOptions = listOf("less than a year", "1", "2", "3", "4", "5", "5+", "10+", "15+", "20+")
-        val yearAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, yearOptions)
-        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        yearBuiltInput.adapter = yearAdapter
-
-        val propertyTypes = listOf(
-            "Apartment/Flat", "Villa", "Condominiums", "Row House",
-            "Penthouse", "Studio", "Bungalows", "Haveli", "Other"
-        )
-        val propertyAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, propertyTypes)
-        propertyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        typeOfPropertyInput.adapter = propertyAdapter
-
-        saveContinueBtn.setOnClickListener {
-            if (!validateForm()) return@setOnClickListener
-
-            // Store all property info in PropertySingleton
             PropertySingleton.title = propertyTitle.text.toString()
             PropertySingleton.description = propertyDescription.text.toString()
             PropertySingleton.price = propertyPrice.text.toString()
@@ -210,8 +240,6 @@ class UploadPropertyActivity : AppCompatActivity() {
             val intent = Intent(this, IdentityUploadActivity::class.java)
             startActivity(intent)
         }
-
-
         supabaseUploadLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) {
                 selectedFileUris.add(uri)
@@ -233,18 +261,15 @@ class UploadPropertyActivity : AppCompatActivity() {
             false
         } else true
     }
-
     private fun showSelectedImages() {
         uploadPhotoLayout.removeAllViews()
         uploadPhotoLayout.orientation = LinearLayout.HORIZONTAL
-
         for ((index, uri) in selectedFileUris.withIndex()) {
             val frame = FrameLayout(this)
             val params = LinearLayout.LayoutParams(200, 200).apply {
                 setMargins(8, 8, 8, 8)
             }
             frame.layoutParams = params
-
             val imageView = ImageView(this)
             imageView.layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT
@@ -252,7 +277,6 @@ class UploadPropertyActivity : AppCompatActivity() {
             imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             imageView.setImageURI(uri)
             frame.addView(imageView)
-
             val removeBtn = ImageButton(this)
             val removeBtnSize = 48
             val removeParams = FrameLayout.LayoutParams(removeBtnSize, removeBtnSize, Gravity.END or Gravity.TOP)
@@ -266,7 +290,6 @@ class UploadPropertyActivity : AppCompatActivity() {
             frame.addView(removeBtn)
             uploadPhotoLayout.addView(frame)
         }
-
         val plusBtn = ImageButton(this)
         plusBtn.layoutParams = LinearLayout.LayoutParams(200, 200).apply {
             setMargins(8, 8, 8, 8)
@@ -279,4 +302,3 @@ class UploadPropertyActivity : AppCompatActivity() {
         uploadPhotoLayout.addView(plusBtn)
     }
 }
-
