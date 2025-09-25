@@ -38,14 +38,14 @@ class SellerPropertyDetailActivity : AppCompatActivity() {
                     return@addOnSuccessListener
                 }
 
-                // Bind main property details
-                findViewById<TextView>(R.id.tvTitle).text = doc.getString("title") ?: ""
-                findViewById<TextView>(R.id.tvDescription).text = doc.getString("description") ?: ""
-                findViewById<TextView>(R.id.tvAddress).text = doc.getString("address") ?: ""
-                findViewById<TextView>(R.id.tvPrice).text = "₹" + (doc.getString("price") ?: "")
-                findViewById<TextView>(R.id.tvYearBuilt).text = doc.getString("yearBuilt") ?: ""
-                findViewById<TextView>(R.id.tvPropertyType).text = doc.getString("propertyType") ?: ""
-                findViewById<TextView>(R.id.tvSize).text = doc.getString("propertySize") ?: ""
+                // === Tag: value for all details ===
+                findViewById<TextView>(R.id.tvTitle).text = "Title: ${doc.getString("title") ?: ""}"
+                findViewById<TextView>(R.id.tvDescription).text = "Description: ${doc.getString("description") ?: ""}"
+                findViewById<TextView>(R.id.tvAddress).text = "Address: ${doc.getString("address") ?: ""}"
+                findViewById<TextView>(R.id.tvPrice).text = "Price: ₹${doc.getString("price") ?: ""}"
+                findViewById<TextView>(R.id.tvYearBuilt).text = "Age of Property(in years): ${doc.getString("yearBuilt") ?: ""}"
+                findViewById<TextView>(R.id.tvPropertyType).text = "Type: ${doc.getString("propertyType") ?: ""}"
+                findViewById<TextView>(R.id.tvSize).text = "Size(in sq.ft.): ${doc.getString("propertySize") ?: ""}"
 
                 // Show images
                 val imageUrls = doc.get("propertyImageUrls") as? List<String> ?: emptyList()

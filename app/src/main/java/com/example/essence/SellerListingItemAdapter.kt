@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class SellerListingItemAdapter(private val propertyList: List<Property>) :
     RecyclerView.Adapter<SellerListingItemAdapter.PropertyViewHolder>() {
@@ -32,14 +33,27 @@ class SellerListingItemAdapter(private val propertyList: List<Property>) :
         holder.propertyTitle.text = currentProperty.title
         holder.propertyPrice.text = "₹${currentProperty.price}"
 
+        // === Show first image from imageUrls if available ===
+        val imageUrl = currentProperty.propertyImageUrls?.firstOrNull() // imageUrls: List<String>? must exist in Property
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(holder.propertyImage.context)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_property_image)
+                .error(R.drawable.ic_property_image)
+                .centerCrop()
+                .into(holder.propertyImage)
+        } else {
+            holder.propertyImage.setImageResource(R.drawable.ic_property_image)
+        }
+
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, SellerPropertyDetailActivity::class.java)
             intent.putExtra("propertyId", currentProperty.propertyId)
             holder.itemView.context.startActivity(intent)
         }
 
-        // Show/hide edit button only for rejected/changes_requested properties
-        holder.editBtn.isVisible = currentProperty.status == "rejected" || currentProperty.status == "changes_requested"
+        holder.editBtn.isVisible =
+            currentProperty.status == "rejected" || currentProperty.status == "changes_requested"
         holder.editBtn.setOnClickListener {
             val intent = Intent(holder.itemView.context, UploadPropertyActivity::class.java)
             intent.putExtra("propertyId", currentProperty.propertyId)

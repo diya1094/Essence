@@ -4,10 +4,10 @@ import NotificationHelper
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -20,10 +20,11 @@ class SellerHomeActivity : AppCompatActivity() {
     private lateinit var btnAddNewProperty: Button
     private lateinit var listingsCount: TextView
     private lateinit var soldCount: TextView
-    private val db = FirebaseFirestore.getInstance()
 
+    private val db = FirebaseFirestore.getInstance()
     private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var notificationIcon: ImageView // 🔔 bell icon
+    private lateinit var notificationIcon: ImageView
+    private lateinit var notificationBadge: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +38,30 @@ class SellerHomeActivity : AppCompatActivity() {
         soldCount = findViewById(R.id.sold_count)
 
         bottomNavigationView = findViewById(R.id.bottomNavigation)
-
         notificationIcon = findViewById(R.id.notification_icon)
+        notificationBadge = findViewById(R.id.notification_badge)
 
-        val auth = FirebaseAuth.getInstance()
         val db = FirebaseFirestore.getInstance()
         val currentUser = FirebaseAuth.getInstance().currentUser
+
+        fun updateNotificationBadge() {
+            currentUser?.email?.let { userEmail ->
+                db.collection("adminMessages")
+                    .whereArrayContains("recipients", userEmail)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        val count = documents.size()
+                        if (count > 0) {
+                            notificationBadge.text = count.toString()
+                            notificationBadge.visibility = View.VISIBLE
+                        } else {
+                            notificationBadge.visibility = View.GONE
+                        }
+                    }
+            }
+        }
+
+        updateNotificationBadge()
 
         notificationIcon.setOnClickListener {
             val currentUser = FirebaseAuth.getInstance().currentUser
@@ -50,72 +69,46 @@ class SellerHomeActivity : AppCompatActivity() {
                 db.collection("adminMessages")
                     .whereArrayContains("recipients", userEmail)
                     .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                    .limit(1)
                     .get()
                     .addOnSuccessListener { documents ->
                         if (!documents.isEmpty) {
-                            val doc = documents.documents[0]
-                            val latestMessage = doc.getString("message") ?: "No message"
-                            val propertyId = doc.getString("propertyId") ?: "Unknown Property"
-
-                            val dialogMsg = "Notification: $latestMessage\n\nProperty ID: $propertyId"
+                            val messages = documents.documents.mapIndexed { idx, doc ->
+                                val latestMessage = doc.getString("message") ?: "No message"
+                                val propertyId = doc.getString("propertyId") ?: "Unknown Property"
+                                "• $latestMessage\n   Property: $propertyId"
+                            }
+                            val messageText = messages.joinToString("\n\n")
                             androidx.appcompat.app.AlertDialog.Builder(this)
-                                .setTitle("Admin Notification")
-                                .setMessage(dialogMsg)
+                                .setTitle("Admin Notifications")
+                                .setMessage(messageText)
                                 .setPositiveButton("OK", null)
                                 .show()
                         } else {
                             androidx.appcompat.app.AlertDialog.Builder(this)
-                                .setTitle("Admin Notification")
+                                .setTitle("Admin Notifications")
                                 .setMessage("No admin messages found for you")
                                 .setPositiveButton("OK", null)
                                 .show()
                         }
+                        updateNotificationBadge()
                     }
                     .addOnFailureListener { e ->
                         androidx.appcompat.app.AlertDialog.Builder(this)
                             .setTitle("Admin Notification")
-                            .setMessage("Failed to fetch admin message: ${e.message}")
+                            .setMessage("Failed to fetch admin messages: ${e.message}")
                             .setPositiveButton("OK", null)
                             .show()
                     }
             }
         }
 
-
-        currentUser?.email?.let { userEmail ->
-            db.collection("adminMessages")
-                .whereArrayContains("recipients", userEmail)
-                .get()
-                .addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
-                        val latestMessage = documents.documents.last().getString("message") ?: "No message"
-                        NotificationHelper.showNotification(
-                            this,
-                            "Admin Message",
-                            latestMessage
-                        )
-                    } else {
-                        Toast.makeText(this, "No admin messages found for you", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener {
-                    Toast.makeText(this, "Failed to fetch admin message", Toast.LENGTH_SHORT).show()
-                }
-
-        }
-
         val userId = currentUser?.uid
-
         if (userId != null) {
-            val db = FirebaseFirestore.getInstance()
-
             db.collection("users").document(userId).get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
                         val name = document.getString("name") ?: "User"
                         val role = document.getString("role") ?: "Seller"
-
                         tvWelcome.text = "Welcome, $name 👋"
                         tvRole.text = role.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
                     } else {
@@ -139,7 +132,6 @@ class SellerHomeActivity : AppCompatActivity() {
                         soldCount.text = "0"
                         return@addSnapshotListener
                     }
-
                     if (querySnapshot != null) {
                         var activeCount = 0
                         var soldCountValue = 0
@@ -171,19 +163,16 @@ class SellerHomeActivity : AppCompatActivity() {
         }
 
         bottomNavigationView.selectedItemId = R.id.nav_home
-
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> {
-                    true
-                }
+                R.id.nav_home -> true
                 R.id.nav_list -> {
                     val profileIntent = Intent(this, SellerListingActivity::class.java)
                     startActivity(profileIntent)
                     true
                 }
                 R.id.nav_profile -> {
-                    val profileIntent = Intent(this, ProfileActivity::class.java) // Assuming ProfileActivity exists
+                    val profileIntent = Intent(this, ProfileActivity::class.java)
                     startActivity(profileIntent)
                     true
                 }
@@ -196,6 +185,23 @@ class SellerHomeActivity : AppCompatActivity() {
         super.onResume()
         if (::bottomNavigationView.isInitialized) {
             bottomNavigationView.selectedItemId = R.id.nav_home
+        }
+        if (::notificationBadge.isInitialized) {
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            currentUser?.email?.let { userEmail ->
+                db.collection("adminMessages")
+                    .whereArrayContains("recipients", userEmail)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        val count = documents.size()
+                        if (count > 0) {
+                            notificationBadge.text = count.toString()
+                            notificationBadge.visibility = View.VISIBLE
+                        } else {
+                            notificationBadge.visibility = View.GONE
+                        }
+                    }
+            }
         }
     }
 }

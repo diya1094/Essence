@@ -59,9 +59,10 @@
                         android:textSize="10sp"
                         android:gravity="center"
                         android:visibility="gone"
-                        android:layout_gravity="end|top"
-                        android:translationX="6dp"
-                        android:translationY="-6dp"/>
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginEnd="0dp"/>
+
                 </FrameLayout>
 
             </RelativeLayout>

@@ -51,8 +51,13 @@ class PropertyDetailActivity : AppCompatActivity() {
         val imageAdapter = PropertyImageAdapter(imageUrls)
         imageViewPager.adapter = imageAdapter
 
+        // === Show seller email as toast on contact button click ===
         btnContact.setOnClickListener {
-            Toast.makeText(this, "Seller Email: ${property.sellerEmail}", Toast.LENGTH_LONG).show()
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Seller Email")
+                .setMessage(property.sellerEmail ?: "Not available")
+                .setPositiveButton("OK", null)
+                .show()
         }
 
         btnSave.setOnClickListener {
@@ -65,7 +70,6 @@ class PropertyDetailActivity : AppCompatActivity() {
             intent.putExtra("property", property) // pass property for payment status
             paymentLauncher.launch(intent)
         }
-
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottomNavigation)
         bottomNavigation.selectedItemId = R.id.nav_home
