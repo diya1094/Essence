@@ -38,13 +38,13 @@
                     android:layout_height="wrap_content">
 
                     <!-- Bell Icon -->
-                    <ImageView
-                        android:id="@+id/notification_icon"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_bell"
-                        android:contentDescription="Notifications"
-                        android:padding="4dp" />
+<!--                    <ImageView-->
+<!--                        android:id="@+id/notification_icon"-->
+<!--                        android:layout_width="32dp"-->
+<!--                        android:layout_height="32dp"-->
+<!--                        android:src="@drawable/ic_bell"-->
+<!--                        android:contentDescription="Notifications"-->
+<!--                        android:padding="4dp" />-->
 
                     <!-- Badge (Count) -->
                     <TextView

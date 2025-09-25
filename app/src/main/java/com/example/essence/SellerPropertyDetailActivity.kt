@@ -1,8 +1,10 @@
 package com.example.essence
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -18,7 +20,7 @@ class SellerPropertyDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_seller_property_detail) // you need to create this layout!
+        setContentView(R.layout.activity_seller_property_detail)
 
         val propertyId = intent.getStringExtra("propertyId")
         if (propertyId.isNullOrEmpty()) {
@@ -45,28 +47,54 @@ class SellerPropertyDetailActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.tvPropertyType).text = doc.getString("propertyType") ?: ""
                 findViewById<TextView>(R.id.tvSize).text = doc.getString("propertySize") ?: ""
 
-                // Show images/docs
-                val imageUrls = doc.get("imageUrls") as? List<String> ?: emptyList()
-                val documentUrls = doc.get("documentUrls") as? List<String> ?: emptyList()
-
+                // Show images
+                val imageUrls = doc.get("propertyImageUrls") as? List<String> ?: emptyList()
                 val imagesLayout = findViewById<LinearLayout>(R.id.imagesLayout)
                 imagesLayout.removeAllViews()
                 for (url in imageUrls) {
                     val imageView = ImageView(this)
-                    imageView.layoutParams = LinearLayout.LayoutParams(240, 180)
-                    Glide.with(this).load(url).into(imageView)
-                    imageView.setPadding(10, 10, 10, 10)
+                    imageView.layoutParams = LinearLayout.LayoutParams(240, 180).apply {
+                        setMargins(0, 0, 24, 0)
+                    }
+                    imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                    Glide.with(this).load(url)
+                        .placeholder(android.R.drawable.ic_menu_report_image)
+                        .into(imageView)
+                    imageView.setOnClickListener {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(intent)
+                    }
                     imagesLayout.addView(imageView)
                 }
 
+                // Show documents as buttons (admin style)
                 val docsLayout = findViewById<LinearLayout>(R.id.docsLayout)
                 docsLayout.removeAllViews()
-                for (url in documentUrls) {
-                    val docView = TextView(this)
-                    docView.text = url
-                    docView.setPadding(4, 4, 4, 4)
-                    docsLayout.addView(docView)
-                    // Could add a button or clickable link, or use a WebView
+                val docFields = listOf(
+                    "Title Deed" to doc.getString("titleDeedUrl"),
+                    "Encumbrance Certificate" to doc.getString("encumbranceUrl"),
+                    "Mutation Document" to doc.getString("mutationUrl"),
+                    "Property Tax Receipt" to doc.getString("propertyTaxUrl"),
+                    "Possession Letter" to doc.getString("possessionUrl"),
+                    "No Objection Certificate" to doc.getString("nocUrl"),
+                    "Utility Bill" to doc.getString("utilityBillUrl")
+                )
+                var docAdded = false
+                for ((label, url) in docFields) {
+                    if (!url.isNullOrEmpty()) {
+                        val btn = Button(this).apply {
+                            text = "View $label"
+                            setOnClickListener {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                startActivity(intent)
+                            }
+                        }
+                        docsLayout.addView(btn)
+                        docAdded = true
+                    }
+                }
+                if (!docAdded) {
+                    docsLayout.addView(TextView(this).apply { text = "No document files uploaded." })
                 }
             }
             .addOnFailureListener { e ->

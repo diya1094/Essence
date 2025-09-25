@@ -71,9 +71,18 @@ class PropertyDetailActivity : AppCompatActivity() {
         bottomNavigation.selectedItemId = R.id.nav_home
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> { startActivity(Intent(this, BuyerMainActivity::class.java)); true }
-                R.id.nav_saved -> { startActivity(Intent(this, SavedActivity::class.java)); true }
-                R.id.nav_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); true }
+                R.id.nav_home -> {
+                    startActivity(Intent(this, BuyerMainActivity::class.java)); true
+                }
+
+                R.id.nav_saved -> {
+                    startActivity(Intent(this, SavedActivity::class.java)); true
+                }
+
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java)); true
+                }
+
                 else -> false
             }
         }
